@@ -274,8 +274,8 @@ cdT=setInterval(()=>{const l=Math.max(0,N-(Date.now()-t0)/1000);$('bt').textCont
 function judge(ok){const w=bst.winner;if(!w)return;
 if(ok){R.child('state').set({open:true,winner:null,round:Date.now()});setTool(w.team);fanfare();
 if(spot!==null&&!cells[spot].t)clickCell(spot);else msg((w.team=='red'?'🟥 ':'🟩 ')+w.name+' ✔ اضغط على الحرف لتلوينه')}
-else{const bl=Object.assign({},bst.blocked||{});bl[w.id]=1;R.child('state').set({open:true,winner:null,blocked:bl,round:Date.now()});tone(180,'sawtooth',.4)}}
-function ignoreBuzz(){if(R)R.child('state').set({open:true,winner:null,blocked:bst.blocked||null,round:Date.now()})}
+else{R.child('state').set({open:true,winner:null,round:Date.now()});tone(180,'sawtooth',.4)}}
+function ignoreBuzz(){if(R)R.child('state').set({open:true,winner:null,round:Date.now()})}
 function plRender(p){['red','green'].forEach(t=>{const e=$('pl-'+t);e.innerHTML='';Object.values(p).filter(x=>x.team==t).forEach(x=>{const s=document.createElement('span');s.textContent=x.name;e.appendChild(s)})})}
 function showJoin(){const u=new URL('buzzer.html?room='+room,location.href).href;$('rc').textContent=room;$('ru').textContent=u;$('qr').innerHTML='';
 if(window.QRCode)new QRCode($('qr'),{text:u,width:220,height:220});$('jn').classList.add('show');if(!R)noCfg()}
