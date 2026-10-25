@@ -56,9 +56,9 @@ $('go').onclick=()=>{const n=$('nm').value.trim(),r=$('rm').value.trim();
   if(!n||!team||!r){$('hint').textContent='اكتب الرمز والاسم واختر فريقك';return}
   me={id:(me&&me.id)||Math.random().toString(36).slice(2,9),name:n,team};room=r;
   localStorage.hrp=JSON.stringify(me);localStorage.hrr=r;start()};
-function render(st){const w=st.winner,bl=st.blocked&&st.blocked[me.id];let c='',t='⏳\nانتظر السؤال';
+function render(st){const w=st.winner;let c='',t='⏳\nانتظر السؤال';
   if(w){if(w.id==me.id){c='won';t='🎉\nأنت الأول!\nجاوب الآن';navigator.vibrate&&navigator.vibrate([200,80,200])}else{c='lost';t='🔔 '+w.name+'\nسبقك'}}
-  else if(st.open){if(bl){c='lost';t='🚫\nجاوبت قبل\nانتظر السؤال التالي'}else{c='open';t='🔔\nاضغط!'}}
+  else if(st.open){c='open';t='🔔\nاضغط!'}
   $('bell').className=c;$('bell').textContent=t}
 function start(){$('join').hidden=true;$('play').hidden=false;
   $('who').textContent=(me.team=='red'?'🟥 ':'🟩 ')+me.name+' — غرفة '+room;
@@ -66,7 +66,7 @@ function start(){$('join').hidden=true;$('play').hidden=false;
   db.ref('.info/connected').on('value',s=>{if(s.val()){P.onDisconnect().remove();P.set({name:me.name,team:me.team})}});
   R.child('state').on('value',s=>render(s.val()||{}));
   $('bell').onpointerdown=()=>{if(!$('bell').classList.contains('open'))return;navigator.vibrate&&navigator.vibrate(50);
-    R.child('state').transaction(c=>{if(c&&c.open&&!c.winner&&!(c.blocked&&c.blocked[me.id])){c.winner={id:me.id,name:me.name,team:me.team,t:Date.now()};return c}})};
+    R.child('state').transaction(c=>{if(c&&c.open&&!c.winner){c.winner={id:me.id,name:me.name,team:me.team,t:Date.now()};return c}})};
   $('chg').onclick=()=>{P.remove();localStorage.removeItem('hrp');location.reload()}}
 if(typeof firebase=='undefined'||!C||String(C.apiKey).startsWith('PASTE')){$('err').hidden=false;$('join').hidden=true}
 else{firebase.initializeApp(C);db=firebase.database();$('rm').value=room;if(me){$('nm').value=me.name;pick(me.team)}if(me&&room)start()}
