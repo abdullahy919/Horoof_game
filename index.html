@@ -4,236 +4,501 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة الحروف مع عبد الله</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* الوضع النهاري المشرق (الافتراضي كما طلبت) */
+            --bg-main: radial-gradient(circle at 50% 20%, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+            --text-primary: #0f172a;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --panel-border: rgba(203, 213, 225, 0.8);
+            --arena-bg: #f8fafc;
+            --arena-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.18), inset 0 4px 20px rgba(255, 255, 255, 0.9);
+            
+            /* ألوان الخلية العادية (3D) */
+            --hex-border: #cbd5e1;
+            --hex-bg: linear-gradient(160deg, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+            --hex-text: #1e293b;
+            --hex-shadow: drop-shadow(0 8px 10px rgba(15, 23, 42, 0.12));
+            
+            /* ألوان الفريق الأحمر (ياقوتي متألق) */
+            --red-border: #fca5a5;
+            --red-bg: linear-gradient(145deg, #ff5f6d 0%, #ef4444 45%, #b91c1c 100%);
+            --red-glow: drop-shadow(0 8px 18px rgba(239, 68, 68, 0.55));
+            
+            /* ألوان الفريق الأخضر (زمردي متألق) */
+            --green-border: #6ee7b7;
+            --green-bg: linear-gradient(145deg, #34d399 0%, #10b981 45%, #047857 100%);
+            --green-glow: drop-shadow(0 8px 18px rgba(16, 185, 129, 0.55));
+        }
+
+        body.dark-mode {
+            /* الوضع الليلي الفخم */
+            --bg-main: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 70%, #020617 100%);
+            --text-primary: #f8fafc;
+            --panel-bg: rgba(30, 41, 59, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --arena-bg: #0f172a;
+            --arena-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.7), inset 0 2px 15px rgba(255, 255, 255, 0.05);
+            
+            --hex-border: #475569;
+            --hex-bg: linear-gradient(160deg, #334155 0%, #1e293b 65%, #0f172a 100%);
+            --hex-text: #f8fafc;
+            --hex-shadow: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
+        }
+
         * {
             box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            background: var(--bg-color);
-            color: var(--text-color);
+            background: var(--bg-main);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 20px 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.4s ease;
         }
 
-        /* الثيمات (ليلي ونهاري) */
-        :root {
-            --bg-color: #0f172a;
-            --text-color: #f8fafc;
-            --arena-bg: #1e293b;
-            --cell-bg: linear-gradient(145deg, #334155, #1e293b);
-            --cell-border: rgba(255, 255, 255, 0.1);
-            --cell-text: #f1f5f9;
-            --status-bg: rgba(30, 41, 59, 0.9);
-            --status-text: #38bdf8;
-        }
-
-        body.light-mode {
-            --bg-color: #f8fafc;
-            --text-color: #0f172a;
-            --arena-bg: #ffffff;
-            --cell-bg: linear-gradient(145deg, #f1f5f9, #e2e8f0);
-            --cell-border: rgba(0, 0, 0, 0.1);
-            --cell-text: #1e293b;
-            --status-bg: #ffffff;
-            --status-text: #0284c7;
-        }
-
-        .header-container {
+        /* الهيدر وشريط العنوان */
+        .header-bar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin: 10px 0 20px 0;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 780px;
+            margin-bottom: 18px;
+            padding: 12px 24px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         h1 {
-            color: var(--text-color);
-            font-size: 34px;
-            font-weight: 900;
-            text-align: center;
             margin: 0;
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #0284c7, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
-        .theme-toggle {
-            background: #f59e0b;
-            color: #fff;
+        body.dark-mode h1 {
+            background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: var(--arena-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--panel-border);
             padding: 8px 16px;
+            border-radius: 14px;
             font-size: 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            border: none;
             font-weight: 700;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .controls {
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+
+        /* شريط أدوات التحكم */
+        .controls-dock {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
+            padding: 12px 18px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.12);
             margin-bottom: 25px;
-            max-width: 750px;
         }
-        button {
-            padding: 12px 20px;
+
+        .tool-btn {
+            padding: 11px 22px;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 800;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            transition: all 0.25s ease;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-        .btn-clear { background: linear-gradient(135deg, #64748b, #475569); color: #fff; }
-        .btn-reset { background: linear-gradient(135deg, #334155, #1e293b); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-
-        button.active-tool {
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 20px currentColor;
-            transform: scale(1.08);
-        }
-
-        /* ساحة اللعب مع جدران سميكة بارزة */
-        .arena {
+            color: #fff;
             position: relative;
-            padding: 25px;
-            background: var(--arena-bg);
-            border-radius: 28px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            border-width: 18px;
-            border-style: solid;
-            border-color: #10b981 #ef4444 #10b981 #ef4444;
+            overflow: hidden;
         }
 
-        /* شبكة خلية النحل الهندسية الحقيقية (Hexagon Grid) */
-        .board {
-            display: grid;
-            grid-template-columns: repeat(5, 66px);
-            gap: 6px;
-            justify-content: center;
+        .tool-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 45%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent);
+            border-radius: 14px 14px 0 0;
+            pointer-events: none;
         }
 
-        /* شكل الخلية السداسية الهندسية (Hexagon) */
-        .cell {
-            width: 72px;
-            height: 64px;
-            background: var(--cell-bg);
-            border: var(--cell-border);
+        .tool-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+        }
+
+        .tool-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.35); }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.35); }
+        .btn-green { background: linear-gradient(135deg, #10b981, #047857); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.35); }
+        .btn-clear { background: linear-gradient(135deg, #64748b, #334155); box-shadow: 0 6px 15px rgba(100, 116, 139, 0.35); }
+        .btn-reset { background: linear-gradient(135deg, #334155, #0f172a); box-shadow: 0 6px 15px rgba(15, 23, 42, 0.35); }
+
+        .tool-btn.active-tool {
+            transform: translateY(-4px) scale(1.08);
+            outline: 3px solid var(--text-primary);
+            outline-offset: 3px;
+        }
+
+        /* ساحة خلية النحل مع الجدران التنافسية العملاقة */
+        .arena-wrapper {
+            position: relative;
+            padding: 26px;
+            border-radius: 40px;
+            background: conic-gradient(
+                from 45deg,
+                #ef4444 0deg 90deg,
+                #10b981 90deg 180deg,
+                #ef4444 180deg 270deg,
+                #10b981 270deg 360deg
+            );
+            box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.28);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--cell-text);
-            cursor: pointer;
-            user-select: none;
+        }
+
+        /* شارات الجدران لتوضيح اتجاه كل فريق */
+        .wall-badge {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 900;
+            color: #ffffff;
+            padding: 3px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .wall-top { top: 4px; background: #047857; }
+        .wall-bottom { bottom: 4px; background: #047857; }
+        .wall-right { right: -28px; background: #b91c1c; transform: rotate(90deg); }
+        .wall-left { left: -28px; background: #b91c1c; transform: rotate(-90deg); }
+
+        .arena-inner {
+            background: var(--arena-bg);
+            padding: 35px 45px 35px 25px;
+            border-radius: 24px;
+            box-shadow: var(--arena-shadow);
+            transition: background 0.4s ease;
+        }
+
+        /* هندسة خلية النحل المتداخلة الحقيقية (Honeycomb Layout) */
+        .honeycomb {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hex-row {
+            display: flex;
+            gap: 8px;
+            margin-top: -20px; /* تداخل الصفوف هندسياً */
+        }
+
+        .hex-row:first-child {
+            margin-top: 0;
+        }
+
+        /* إزاحة الصفوف الزوجية لتعشيق خلية النحل */
+        .hex-row.even {
+            transform: translateX(-44px);
+        }
+
+        /* الخلية السداسية ثلاثية الأبعاد */
+        .hex-wrapper {
+            width: 82px;
+            height: 94px;
             position: relative;
-            clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s ease;
+            cursor: pointer;
+            filter: var(--hex-shadow);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+            z-index: 1;
         }
 
-        /* تأثير تداخل صفوف خلية النحل لتبدو هندسية متقاربة */
-        .cell:nth-child(even) {
-            transform: translateY(4px);
+        /* الإطار الخارجي للخلية */
+        .hex-outer {
+            width: 100%;
+            height: 100%;
+            background: var(--hex-border);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: background 0.3s ease;
         }
 
-        .cell:hover {
-            background: #38bdf8 !important;
-            color: #0f172a !important;
-            transform: scale(1.12) translateY(0);
-            z-index: 10;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
+        /* القلب الداخلي البلوري للخلية */
+        .hex-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--hex-bg);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background 0.3s ease;
         }
 
-        .cell.team-red {
-            background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
-            color: white !important;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+        /* اللمعة الزجاجية العلوية داخل الخلية */
+        .hex-inner::before {
+            content: '';
+            position: absolute;
+            top: 4%;
+            left: 15%;
+            right: 15%;
+            height: 38%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0));
+            clip-path: polygon(50% 0%, 100% 45%, 80% 100%, 20% 100%, 0% 45%);
+            pointer-events: none;
         }
-        .cell.team-green {
-            background: linear-gradient(135deg, #10b981, #047857) !important;
-            color: white !important;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+
+        body.dark-mode .hex-inner::before {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
         }
-        
-        .status {
+
+        /* تصميم الحرف المتألق داخل الخلية */
+        .hex-letter {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--hex-text);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            z-index: 2;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        /* تأثيرات التمرير والضغط على الخلية */
+        .hex-wrapper:hover {
+            transform: scale(1.13) translateY(-4px);
+            z-index: 20;
+            filter: drop-shadow(0 14px 20px rgba(59, 130, 246, 0.4));
+        }
+
+        .hex-wrapper:hover .hex-outer {
+            background: #38bdf8;
+        }
+
+        .hex-wrapper:active {
+            transform: scale(0.95);
+        }
+
+        /* حالة تلوين الفريق الأحمر */
+        .hex-wrapper.team-red {
+            filter: var(--red-glow);
+            z-index: 5;
+        }
+        .hex-wrapper.team-red .hex-outer {
+            background: var(--red-border);
+        }
+        .hex-wrapper.team-red .hex-inner {
+            background: var(--red-bg);
+        }
+        .hex-wrapper.team-red .hex-letter {
+            color: #ffffff;
+            text-shadow: 0 3px 6px rgba(127, 29, 29, 0.7);
+            transform: scale(1.08);
+        }
+
+        /* حالة تلوين الفريق الأخضر */
+        .hex-wrapper.team-green {
+            filter: var(--green-glow);
+            z-index: 5;
+        }
+        .hex-wrapper.team-green .hex-outer {
+            background: var(--green-border);
+        }
+        .hex-wrapper.team-green .hex-inner {
+            background: var(--green-bg);
+        }
+        .hex-wrapper.team-green .hex-letter {
+            color: #ffffff;
+            text-shadow: 0 3px 6px rgba(6, 78, 59, 0.7);
+            transform: scale(1.08);
+        }
+
+        /* حركة نبض عند التلوين */
+        @keyframes popIn {
+            0% { transform: scale(0.8) rotateY(90deg); }
+            60% { transform: scale(1.15) rotateY(-10deg); }
+            100% { transform: scale(1) rotateY(0deg); }
+        }
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* شريط الحالة السفلي */
+        .status-pill {
             margin-top: 25px;
             font-size: 16px;
-            font-weight: 700;
-            color: var(--status-text);
-            background: var(--status-bg);
-            padding: 12px 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            padding: 12px 30px;
             border-radius: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--panel-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* تجاوب الشاشات الصغيرة والجوال */
+        @media (max-width: 600px) {
+            .header-bar { flex-direction: column; gap: 12px; text-align: center; }
+            .arena-inner { padding: 25px 32px 25px 14px; }
+            .hex-wrapper { width: 58px; height: 66px; }
+            .hex-row { gap: 5px; margin-top: -14px; }
+            .hex-row.even { transform: translateX(-31px); }
+            .hex-letter { font-size: 22px; }
+            .wall-right, .wall-left { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <h1>🎮 لعبة الحروف مع عبد الله</h1>
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 وضع ليلي / نهاري</button>
+    <!-- الهيدر العُلوي -->
+    <div class="header-bar">
+        <div class="title-wrapper">
+            <span style="font-size: 32px;">🐝</span>
+            <h1>لعبة الحروف مع عبد الله</h1>
+        </div>
+        <div class="top-actions">
+            <button class="icon-btn" id="soundBtn" onclick="toggleSound()">🔊 الصوت: مفعل</button>
+            <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙 الوضع الليلي</button>
+        </div>
     </div>
 
-    <div class="controls">
-        <button class="btn-shuffle" onclick="shuffleLetters()">🔀 خلط الحروف</button>
-        <button class="btn-red" id="tool-red" onclick="selectTool('red')">🟥 تلوين أحمر</button>
-        <button class="btn-green" id="tool-green" onclick="selectTool('green')">🟩 تلوين أخضر</button>
-        <button class="btn-clear" id="tool-clear" onclick="selectTool('clear')">🧹 مسح حرف</button>
-        <button class="btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
+    <!-- لوحة الأدوات -->
+    <div class="controls-dock">
+        <button class="tool-btn btn-shuffle" onclick="shuffleLetters()">🔀 خلط الحروف</button>
+        <button class="tool-btn btn-red" id="tool-red" onclick="selectTool('red')">🟥 تلوين أحمر</button>
+        <button class="tool-btn btn-green" id="tool-green" onclick="selectTool('green')">🟩 تلوين أخضر</button>
+        <button class="tool-btn btn-clear" id="tool-clear" onclick="selectTool('clear')">🧹 مسح حرف</button>
+        <button class="tool-btn btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
     </div>
 
-    <div class="arena">
-        <div class="board" id="gameBoard"></div>
+    <!-- ساحة خلية النحل التنافسية -->
+    <div class="arena-wrapper">
+        <span class="wall-badge wall-top">⬇ المسار الأخضر ⬇</span>
+        <span class="wall-badge wall-bottom">⬆ المسار الأخضر ⬆</span>
+        <span class="wall-badge wall-right">◀ المسار الأحمر ▶</span>
+        <span class="wall-badge wall-left">◀ المسار الأحمر ▶</span>
+
+        <div class="arena-inner">
+            <div class="honeycomb" id="gameBoard"></div>
+        </div>
     </div>
     
-    <div class="status" id="gameStatus">اختر أداة من الأعلى للبدء في التحدي!</div>
+    <!-- شريط الإشعارات -->
+    <div class="status-pill" id="gameStatus">
+        <span>✨ اختر أداة التلوين من الأعلى ثم اضغط على الحرف!</span>
+    </div>
 
     <script>
         const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
         let boardState = [];
-        let currentTool = null;
+        let currentTool = 'red'; // تفعيل اللون الأحمر افتراضياً لسرعة اللعب
+        let soundEnabled = true;
+        let lastClickedIndex = null;
+
+        // محرك صوتيات تفاعلي مدمج بدون ملفات خارجية
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playTone(freq, type = 'sine', duration = 0.12) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
 
         function initBoard() {
             boardState = letters.map(letter => ({ letter: letter, team: null }));
+            selectTool('red');
             renderBoard();
         }
 
         function shuffleLetters() {
+            playTone(320, 'triangle', 0.15);
+            setTimeout(() => playTone(480, 'triangle', 0.18), 80);
             for (let i = boardState.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [boardState[i].letter, boardState[j].letter] = [boardState[j].letter, boardState[i].letter];
             }
+            lastClickedIndex = null;
             renderBoard();
-            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف داخل خلايا النحل الهندسية بنجاح!";
+            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف وإعادة توزيع خلية النحل!";
         }
 
         function selectTool(tool) {
             currentTool = tool;
+            playTone(400, 'sine', 0.08);
             
             document.getElementById('tool-red').classList.remove('active-tool');
             document.getElementById('tool-green').classList.remove('active-tool');
@@ -241,67 +506,98 @@
 
             if (tool === 'red') {
                 document.getElementById('tool-red').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🟥 الأداة مفعلة: انقر على أي خلية لتلوينها بالأحمر";
+                document.getElementById('gameStatus').innerText = "🟥 أداة التلوين الأحمر جاهزة: اضغط على أي خلية لتلوينها";
             } else if (tool === 'green') {
                 document.getElementById('tool-green').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🟩 الأداة مفعلة: انقر على أي خلية لتلوينها بالأخضر";
+                document.getElementById('gameStatus').innerText = "🟩 أداة التلوين الأخضر جاهزة: اضغط على أي خلية لتلوينها";
             } else if (tool === 'clear') {
                 document.getElementById('tool-clear').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🧹 الأداة مفعلة: انقر على أي خلية لمسح لونها";
+                document.getElementById('gameStatus').innerText = "🧹 أداة الممحاة جاهزة: اضغط على أي خلية لمسح لونها";
             }
         }
 
         function renderBoard() {
             const boardEl = document.getElementById('gameBoard');
             boardEl.innerHTML = '';
-            boardState.forEach((cell, index) => {
-                const cellEl = document.createElement('div');
-                cellEl.classList.add('cell');
-                cellEl.innerText = cell.letter;
-                
-                if (cell.team === 'red') cellEl.classList.add('team-red');
-                if (cell.team === 'green') cellEl.classList.add('team-green');
 
-                cellEl.onclick = () => {
-                    if (!currentTool) {
-                        alert("⚠️ الرجاء اختيار أداة أولاً من الأعلى (تلوين أحمر، أخضر، أو مسح)!");
-                        return;
-                    }
+            // تقسيم الـ 25 حرف إلى 5 صفوف متداخلة (خلية نحل 5×5)
+            for (let row = 0; row < 5; row++) {
+                const rowEl = document.createElement('div');
+                rowEl.classList.add('hex-row');
+                if (row % 2 === 1) rowEl.classList.add('even'); // إزاحة الصفوف الزوجية للتعشيق
 
-                    if (currentTool === 'red') {
-                        boardState[index].team = 'red';
-                        document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف [ ${cell.letter} ] لصالح الفريق الأحمر`;
-                    } else if (currentTool === 'green') {
-                        boardState[index].team = 'green';
-                        document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف [ ${cell.letter} ] لصالح الفريق الأخضر`;
-                    } else if (currentTool === 'clear') {
-                        boardState[index].team = null;
-                        document.getElementById('gameStatus').innerText = `🧹 تم مسح لون الحرف [ ${cell.letter} ]`;
-                    }
-                    
-                    renderBoard();
-                };
+                for (let col = 0; col < 5; col++) {
+                    const index = row * 5 + col;
+                    const cell = boardState[index];
 
-                boardEl.appendChild(cellEl);
-            });
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('hex-wrapper');
+                    if (cell.team === 'red') wrapper.classList.add('team-red');
+                    if (cell.team === 'green') wrapper.classList.add('team-green');
+                    if (index === lastClickedIndex) wrapper.classList.add('animate-pop');
+
+                    wrapper.innerHTML = `
+                        <div class="hex-outer">
+                            <div class="hex-inner">
+                                <span class="hex-letter">${cell.letter}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    wrapper.onclick = () => handleCellClick(index);
+                    rowEl.appendChild(wrapper);
+                }
+
+                boardEl.appendChild(rowEl);
+            }
+        }
+
+        function handleCellClick(index) {
+            if (!currentTool) {
+                alert("⚠️ الرجاء اختيار أداة أولاً من الأعلى!");
+                return;
+            }
+
+            lastClickedIndex = index;
+            const letter = boardState[index].letter;
+
+            if (currentTool === 'red') {
+                boardState[index].team = 'red';
+                playTone(520, 'sine', 0.15);
+                document.getElementById('gameStatus').innerText = `🟥 تم احتلال حرف [ ${letter} ] لصالح الفريق الأحمر!`;
+            } else if (currentTool === 'green') {
+                boardState[index].team = 'green';
+                playTone(640, 'sine', 0.15);
+                document.getElementById('gameStatus').innerText = `🟩 تم احتلال حرف [ ${letter} ] لصالح الفريق الأخضر!`;
+            } else if (currentTool === 'clear') {
+                boardState[index].team = null;
+                playTone(240, 'sine', 0.12);
+                document.getElementById('gameStatus').innerText = `🧹 تم تفريغ خلية الحرف [ ${letter} ]`;
+            }
+
+            renderBoard();
         }
 
         function resetAll() {
-            if (confirm("⚠️ هل أنت متأكد من مسح اللوحة بالكامل وإعادة ضبط اللعبة؟")) {
+            if (confirm("⚠️ هل أنت متأكد من مسح جميع الحروف الملونة وبدء جولة جديدة؟")) {
+                playTone(200, 'sawtooth', 0.2);
                 boardState.forEach(cell => cell.team = null);
-                currentTool = null;
-                document.getElementById('tool-red').classList.remove('active-tool');
-                document.getElementById('tool-green').classList.remove('active-tool');
-                document.getElementById('tool-clear').classList.remove('active-tool');
+                lastClickedIndex = null;
                 renderBoard();
-                document.getElementById('gameStatus').innerText = "🔄 تم إعادة ضبط اللوحة بنجاح.";
+                document.getElementById('gameStatus').innerText = "🔄 تم تصفير اللوحة بالكامل.. جولة جديدة!";
             }
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('gameStatus').innerText = isLight ? "☀️ تم تفعيل الوضع النهاري (المشرق)" : "🌙 تم تفعيل الوضع الليلي (الداكن)";
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('themeBtn').innerText = isDark ? "☀️ الوضع النهاري" : "🌙 الوضع الليلي";
+            playTone(440, 'sine', 0.1);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 الصوت: مفعل" : "🔇 الصوت: مكتوم";
         }
 
         initBoard();
