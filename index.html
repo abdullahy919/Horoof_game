@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>لعبة الحروف مع عبدالله</title>
+<title>لعبة الحروف مع عبد الله</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800;900&family=Reem+Kufi:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{--w:min(150px,calc((100vw - 50px)/8.1),calc((100dvh - 240px)/6.7));--g:calc(var(--w)*.064);
@@ -85,10 +85,25 @@ h1 span{font:inherit}
 html:not([lang=ar]) .top .btn{font-size:13px;padding:8px 10px}
 @media(max-width:1250px){.top{display:flex;flex-wrap:wrap;justify-content:center}.top>.grp{flex-wrap:wrap;justify-content:center}}.stage{direction:rtl}
 .foot{text-align:center;font-size:13px;font-weight:600;color:var(--mut)}.foot a{color:var(--tx);font-weight:800;user-select:text;text-decoration:none}.foot a:hover{text-decoration:underline}
+#bn{--c:#fbbf24;position:fixed;top:12px;left:50%;transform:translate(-50%,-180%);transition:transform .45s cubic-bezier(.34,1.56,.64,1);z-index:85;display:flex;align-items:center;gap:20px;padding:14px 26px;border-radius:30px;background:linear-gradient(160deg,#241a5e,#0d0a2e);border:4px solid var(--c);box-shadow:0 0 70px -6px var(--c),0 20px 50px #000;color:#f1f5f9}
+#bn.show{transform:translate(-50%,0)}
+.ring{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font:700 44px 'Reem Kufi';background:conic-gradient(var(--c) var(--p,100%),rgba(255,255,255,.18) 0);position:relative;flex:none}
+.ring::before{content:"";position:absolute;inset:8px;border-radius:50%;background:#120d3a}.ring span{position:relative}
+#bw{font:700 clamp(26px,3.4vw,44px)/1.2 'Reem Kufi'}#bs{font-size:16px;font-weight:800;color:#cbd5e1}
+.pl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-height:190px;overflow:hidden}
+.pl span{background:rgba(255,255,255,.1);border:1px solid var(--c);border-radius:20px;padding:2px 10px;font-size:14px;font-weight:800}
+#jn{position:fixed;inset:0;display:none;place-items:center;background:rgba(3,6,20,.7);backdrop-filter:blur(6px);z-index:95}#jn.show{display:grid;animation:fade .3s}
+#qr{background:#fff;padding:12px;border-radius:16px;display:inline-block;margin:8px 0}
+#rc{font:700 56px/1 'Reem Kufi';letter-spacing:10px;color:#fde047;margin:6px 0}
+#ru{direction:ltr;font-size:13px;color:#94a3b8;word-break:break-all;max-width:300px;margin:0 auto 14px;user-select:text}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:100}
 @media(max-width:900px){.main{grid-template-columns:1fr 1fr;gap:12px}.stage{grid-column:1/-1;order:3}.card{padding:10px}.sc{font-size:44px}.top{justify-content:center}}
 @media(prefers-reduced-motion:reduce){.rim,.face,body::before,body::after{animation:none}}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="firebase-config.js"></script>
 </head>
 <body data-tool="red">
 <header class="top">
@@ -116,18 +131,22 @@ html:not([lang=ar]) .top .btn{font-size:13px;padding:8px 10px}
     <div class="nm" id="n-red" contenteditable="true" spellcheck="false">الفريق الأحمر</div>
     <div class="sc" id="s-red">0</div>
     <div class="hint"><span data-i="cr"></span> <em id="c-red">0</em></div>
+    <div class="pl" id="pl-red"></div>
   </section>
   <div class="stage"><div id="board"></div></div>
   <section class="card g" id="card-green" style="--c:#10b981">
     <div class="nm" id="n-green" contenteditable="true" spellcheck="false">الفريق الأخضر</div>
     <div class="sc" id="s-green">0</div>
     <div class="hint"><span data-i="cg"></span> <em id="c-green">0</em></div>
+    <div class="pl" id="pl-green"></div>
   </section>
 </main>
 
-<div class="status"><div class="orb" id="orb">؟</div><span id="msg"></span></div>
+<div class="status"><div class="orb" id="orb">؟</div><span id="msg"></span><button class="btn b-spin" id="bz" onclick="toggleBuzz()" style="padding:6px 14px">🔔 جرس</button><button class="btn sys" onclick="showJoin()" title="انضمام المتسابقين">📱</button></div>
 
 <footer class="foot"><span data-i="by"></span> <span style="font-weight:800;color:var(--tx)" data-i="name"></span> | <span data-i="mail"></span> <a href="mailto:abdollah.al.amoudi200@gmail.com" dir="ltr">abdollah.al.amoudi200@gmail.com</a></footer>
+<div id="bn"><div class="ring"><span id="bt">3</span></div><div><div id="bw"></div><div id="bs">🔔 دق الجرس أولاً!</div></div><div class="grp"><button class="btn b-green" onclick="judge(1)">✔ صح</button><button class="btn b-red" onclick="judge(0)">✖ غلط</button></div></div>
+<div id="jn"><div class="ab"><div class="aq">📱 انضمام المتسابقين: امسح الرمز أو اكتب رقم الغرفة</div><div id="qr"></div><div id="rc"></div><div id="ru"></div><div class="grp" style="justify-content:center"><button class="btn b-gray" onclick="newRoom()">🔄 رمز جديد</button><button class="btn b-spin" onclick="$('jn').classList.remove('show')">إغلاق</button></div></div></div>
 <div id="rev"></div>
 <div id="win"><div class="wb" id="wb"><div class="tr">🏆</div><h2 id="wt"></h2><p data-i="winp"></p>
   <div class="grp" style="justify-content:center"><button class="btn b-spin" onclick="newRound()" data-i="nr"></button><button class="btn b-gray" onclick="$('win').classList.remove('show')" data-i="path"></button></div></div></div>
@@ -141,11 +160,11 @@ const K='title spin sh red green clr und all rst tr tg cr cg yes no win winp nr 
 /* لإضافة لغة جديدة: أضف سطراً هنا بنفس ترتيب المفاتيح K */
 const LANG={
 ar:{n:'العربية',d:'rtl',a:AR,s:['لعبة الحروف مع عبد الله','🎲 حرف عشوائي','🔀 خلط','🟥 أحمر','🟩 أخضر','🧹 ممحاة','↩️ تراجع','🔄 مسح الكل','🏆 صفّر النقاط','الفريق الأحمر','الفريق الأخضر','🟥 الخلايا الحمراء:','🟩 الخلايا الخضراء:','✔ نعم','✖ لا','🎉 مبروك {n}! 🎉','وصّلتوا الطريق وفزتوا بالجولة، تستاهلون التصفيق 👏','▶ جولة جديدة','👁 شوف المسار','هل أنت متأكد من مسح كل الألوان من اللوحة؟','هل أنت متأكد من تصفير نقاط الفريقين؟','🟥 أداة الأحمر نشطة: اضغط على الحرف','🟩 أداة الأخضر نشطة: اضغط على الحرف','🧹 الممحاة نشطة: اضغط على الحرف لمسح لونه','🔀 تم خلط الحروف','✨ جاهزين؟ اضغط 🎲 أو مسافة لاختيار الحرف','🎲 الحرف يدور... استعدوا!','كل الحروف ملونة!','🌟 السؤال على حرف [ {l} ]','{n} يحتل الحرف [ {l} ]','🧹 تم تفريغ الحرف [ {l} ]','🏆 مبروك! {n} فاز بالجولة','تم التصميم بواسطة','عبدالله العمودي','الإيميل:']},
-en:{n:'English',d:'ltr',a:EN,s:['Letters Game with Abdullah','🎲 Random letter','🔀 Shuffle','🟥 Red','🟩 Green','🧹 Eraser','↩️ Undo','🔄 Clear all','🏆 Reset scores','Red Team','Green Team','🟥 Red cells:','🟩 Green cells:','✔ Yes','✖ No','🎉 Congratulations {n}! 🎉','You connected the path and won the round. Well deserved! 👏','▶ New round','👁 See the path','Are you sure you want to clear all colors?','Are you sure you want to reset both teams’ scores?','🟥 Red tool active: click a letter','🟩 Green tool active: click a letter','🧹 Eraser active: click a letter to clear it','🔀 Letters shuffled','✨ Ready? Press 🎲 or Space to pick a letter','🎲 The letter is spinning... get ready!','All letters are colored!','🌟 The question is on the letter [ {l} ]','{n} takes the letter [ {l} ]','🧹 Letter [ {l} ] cleared','🏆 Congratulations! {n} won the round','Designed by','Abdullah Al-Amodi','Email:']},
-es:{n:'Español',d:'ltr',a:ES,s:['Juego de Letras con Abdullah','🎲 Letra al azar','🔀 Mezclar','🟥 Rojo','🟩 Verde','🧹 Borrador','↩️ Deshacer','🔄 Limpiar todo','🏆 Reiniciar puntos','Equipo Rojo','Equipo Verde','🟥 Celdas rojas:','🟩 Celdas verdes:','✔ Sí','✖ No','🎉 ¡Felicidades {n}! 🎉','Conectaron el camino y ganaron la ronda. ¡Bien merecido! 👏','▶ Nueva ronda','👁 Ver el camino','¿Seguro que quieres borrar todos los colores del tablero?','¿Seguro que quieres reiniciar los puntos de ambos equipos?','🟥 Herramienta roja activa: toca una letra','🟩 Herramienta verde activa: toca una letra','🧹 Borrador activo: toca una letra para quitar su color','🔀 Letras mezcladas','✨ ¿Listos? Pulsa 🎲 o Espacio para elegir la letra','🎲 ¡La letra está girando... prepárense!','¡Todas las letras están coloreadas!','🌟 La pregunta es con la letra [ {l} ]','{n} ocupa la letra [ {l} ]','🧹 Letra [ {l} ] liberada','🏆 ¡Felicidades! {n} ganó la ronda','Diseñado por','Abdullah Al-Amodi','Correo:']},
-fr:{n:'Français',d:'ltr',a:EN,s:['Jeu des Lettres avec Abdullah','🎲 Lettre au hasard','🔀 Mélanger','🟥 Rouge','🟩 Vert','🧹 Gomme','↩️ Annuler','🔄 Tout effacer','🏆 Réinitialiser les scores','Équipe Rouge','Équipe Verte','🟥 Cases rouges :','🟩 Cases vertes :','✔ Oui','✖ Non','🎉 Félicitations {n} ! 🎉','Vous avez relié le chemin et gagné la manche. Bien mérité ! 👏','▶ Nouvelle manche','👁 Voir le chemin','Voulez-vous vraiment effacer toutes les couleurs du plateau ?','Voulez-vous vraiment réinitialiser les scores des deux équipes ?','🟥 Outil rouge actif : touchez une lettre','🟩 Outil vert actif : touchez une lettre','🧹 Gomme active : touchez une lettre pour effacer sa couleur','🔀 Lettres mélangées','✨ Prêts ? Appuyez sur 🎲 ou Espace pour choisir la lettre','🎲 La lettre tourne... préparez-vous !','Toutes les lettres sont colorées !','🌟 La question porte sur la lettre [ {l} ]','{n} prend la lettre [ {l} ]','🧹 Lettre [ {l} ] libérée','🏆 Félicitations ! {n} remporte la manche','Conçu par','Abdullah Al-Amodi','E-mail :']},
-tr:{n:'Türkçe',d:'ltr',a:TR,s:['Abdullah ile Harf Oyunu','🎲 Rastgele harf','🔀 Karıştır','🟥 Kırmızı','🟩 Yeşil','🧹 Silgi','↩️ Geri al','🔄 Hepsini temizle','🏆 Puanları sıfırla','Kırmızı Takım','Yeşil Takım','🟥 Kırmızı hücreler:','🟩 Yeşil hücreler:','✔ Evet','✖ Hayır','🎉 Tebrikler {n}! 🎉','Yolu birleştirdiniz ve turu kazandınız. Hak ettiniz! 👏','▶ Yeni tur','👁 Yolu gör','Tahtadaki tüm renkleri silmek istediğinizden emin misiniz?','İki takımın puanlarını sıfırlamak istediğinizden emin misiniz?','🟥 Kırmızı araç aktif: bir harfe tıklayın','🟩 Yeşil araç aktif: bir harfe tıklayın','🧹 Silgi aktif: rengini silmek için bir harfe tıklayın','🔀 Harfler karıştırıldı','✨ Hazır mısınız? Harf seçmek için 🎲 veya Boşluk tuşuna basın','🎲 Harf dönüyor... hazırlanın!','Tüm harfler renklendi!','🌟 Soru [ {l} ] harfiyle','{n} [ {l} ] harfini aldı','🧹 [ {l} ] harfi temizlendi','🏆 Tebrikler! {n} turu kazandı','Tasarlayan','Abdullah Al-Amodi','E-posta:']},
-de:{n:'Deutsch',d:'ltr',a:EN,s:['Buchstabenspiel mit Abdullah','🎲 Zufallsbuchstabe','🔀 Mischen','🟥 Rot','🟩 Grün','🧹 Radierer','↩️ Rückgängig','🔄 Alles löschen','🏆 Punkte zurücksetzen','Team Rot','Team Grün','🟥 Rote Felder:','🟩 Grüne Felder:','✔ Ja','✖ Nein','🎉 Glückwunsch {n}! 🎉','Ihr habt den Weg verbunden und die Runde gewonnen. Verdient! 👏','▶ Neue Runde','👁 Weg ansehen','Wirklich alle Farben vom Spielfeld löschen?','Wirklich die Punkte beider Teams zurücksetzen?','🟥 Rotes Werkzeug aktiv: Buchstaben antippen','🟩 Grünes Werkzeug aktiv: Buchstaben antippen','🧹 Radierer aktiv: Buchstaben antippen, um die Farbe zu löschen','🔀 Buchstaben gemischt','✨ Bereit? Drückt 🎲 oder die Leertaste, um den Buchstaben zu wählen','🎲 Der Buchstabe dreht sich... macht euch bereit!','Alle Buchstaben sind gefärbt!','🌟 Die Frage lautet zum Buchstaben [ {l} ]','{n} besetzt den Buchstaben [ {l} ]','🧹 Buchstabe [ {l} ] geleert','🏆 Glückwunsch! {n} gewinnt die Runde','Entworfen von','Abdullah Al-Amodi','E-Mail:']}};
+en:{n:'English',d:'ltr',a:EN,s:['Letters Game with Abdullah','🎲 Random letter','🔀 Shuffle','🟥 Red','🟩 Green','🧹 Eraser','↩️ Undo','🔄 Clear all','🏆 Reset scores','Red Team','Green Team','🟥 Red cells:','🟩 Green cells:','✔ Yes','✖ No','🎉 Congratulations {n}! 🎉','You connected the path and won the round. Well deserved! 👏','▶ New round','👁 See the path','Are you sure you want to clear all colors?','Are you sure you want to reset both teams’ scores?','🟥 Red tool active: click a letter','🟩 Green tool active: click a letter','🧹 Eraser active: click a letter to clear it','🔀 Letters shuffled','✨ Ready? Press 🎲 or Space to pick a letter','🎲 The letter is spinning... get ready!','All letters are colored!','🌟 The question is on the letter [ {l} ]','{n} takes the letter [ {l} ]','🧹 Letter [ {l} ] cleared','🏆 Congratulations! {n} won the round','Designed by','Abdullah Al-Amoudi','Email:']},
+es:{n:'Español',d:'ltr',a:ES,s:['Juego de Letras con Abdullah','🎲 Letra al azar','🔀 Mezclar','🟥 Rojo','🟩 Verde','🧹 Borrador','↩️ Deshacer','🔄 Limpiar todo','🏆 Reiniciar puntos','Equipo Rojo','Equipo Verde','🟥 Celdas rojas:','🟩 Celdas verdes:','✔ Sí','✖ No','🎉 ¡Felicidades {n}! 🎉','Conectaron el camino y ganaron la ronda. ¡Bien merecido! 👏','▶ Nueva ronda','👁 Ver el camino','¿Seguro que quieres borrar todos los colores del tablero?','¿Seguro que quieres reiniciar los puntos de ambos equipos?','🟥 Herramienta roja activa: toca una letra','🟩 Herramienta verde activa: toca una letra','🧹 Borrador activo: toca una letra para quitar su color','🔀 Letras mezcladas','✨ ¿Listos? Pulsa 🎲 o Espacio para elegir la letra','🎲 ¡La letra está girando... prepárense!','¡Todas las letras están coloreadas!','🌟 La pregunta es con la letra [ {l} ]','{n} ocupa la letra [ {l} ]','🧹 Letra [ {l} ] liberada','🏆 ¡Felicidades! {n} ganó la ronda','Diseñado por','Abdullah Al-Amoudi','Correo:']},
+fr:{n:'Français',d:'ltr',a:EN,s:['Jeu des Lettres avec Abdullah','🎲 Lettre au hasard','🔀 Mélanger','🟥 Rouge','🟩 Vert','🧹 Gomme','↩️ Annuler','🔄 Tout effacer','🏆 Réinitialiser les scores','Équipe Rouge','Équipe Verte','🟥 Cases rouges :','🟩 Cases vertes :','✔ Oui','✖ Non','🎉 Félicitations {n} ! 🎉','Vous avez relié le chemin et gagné la manche. Bien mérité ! 👏','▶ Nouvelle manche','👁 Voir le chemin','Voulez-vous vraiment effacer toutes les couleurs du plateau ?','Voulez-vous vraiment réinitialiser les scores des deux équipes ?','🟥 Outil rouge actif : touchez une lettre','🟩 Outil vert actif : touchez une lettre','🧹 Gomme active : touchez une lettre pour effacer sa couleur','🔀 Lettres mélangées','✨ Prêts ? Appuyez sur 🎲 ou Espace pour choisir la lettre','🎲 La lettre tourne... préparez-vous !','Toutes les lettres sont colorées !','🌟 La question porte sur la lettre [ {l} ]','{n} prend la lettre [ {l} ]','🧹 Lettre [ {l} ] libérée','🏆 Félicitations ! {n} remporte la manche','Conçu par','Abdullah Al-Amoudi','E-mail :']},
+tr:{n:'Türkçe',d:'ltr',a:TR,s:['Abdullah ile Harf Oyunu','🎲 Rastgele harf','🔀 Karıştır','🟥 Kırmızı','🟩 Yeşil','🧹 Silgi','↩️ Geri al','🔄 Hepsini temizle','🏆 Puanları sıfırla','Kırmızı Takım','Yeşil Takım','🟥 Kırmızı hücreler:','🟩 Yeşil hücreler:','✔ Evet','✖ Hayır','🎉 Tebrikler {n}! 🎉','Yolu birleştirdiniz ve turu kazandınız. Hak ettiniz! 👏','▶ Yeni tur','👁 Yolu gör','Tahtadaki tüm renkleri silmek istediğinizden emin misiniz?','İki takımın puanlarını sıfırlamak istediğinizden emin misiniz?','🟥 Kırmızı araç aktif: bir harfe tıklayın','🟩 Yeşil araç aktif: bir harfe tıklayın','🧹 Silgi aktif: rengini silmek için bir harfe tıklayın','🔀 Harfler karıştırıldı','✨ Hazır mısınız? Harf seçmek için 🎲 veya Boşluk tuşuna basın','🎲 Harf dönüyor... hazırlanın!','Tüm harfler renklendi!','🌟 Soru [ {l} ] harfiyle','{n} [ {l} ] harfini aldı','🧹 [ {l} ] harfi temizlendi','🏆 Tebrikler! {n} turu kazandı','Tasarlayan','Abdullah Al-Amoudi','E-posta:']},
+de:{n:'Deutsch',d:'ltr',a:EN,s:['Buchstabenspiel mit Abdullah','🎲 Zufallsbuchstabe','🔀 Mischen','🟥 Rot','🟩 Grün','🧹 Radierer','↩️ Rückgängig','🔄 Alles löschen','🏆 Punkte zurücksetzen','Team Rot','Team Grün','🟥 Rote Felder:','🟩 Grüne Felder:','✔ Ja','✖ Nein','🎉 Glückwunsch {n}! 🎉','Ihr habt den Weg verbunden und die Runde gewonnen. Verdient! 👏','▶ Neue Runde','👁 Weg ansehen','Wirklich alle Farben vom Spielfeld löschen?','Wirklich die Punkte beider Teams zurücksetzen?','🟥 Rotes Werkzeug aktiv: Buchstaben antippen','🟩 Grünes Werkzeug aktiv: Buchstaben antippen','🧹 Radierer aktiv: Buchstaben antippen, um die Farbe zu löschen','🔀 Buchstaben gemischt','✨ Bereit? Drückt 🎲 oder die Leertaste, um den Buchstaben zu wählen','🎲 Der Buchstabe dreht sich... macht euch bereit!','Alle Buchstaben sind gefärbt!','🌟 Die Frage lautet zum Buchstaben [ {l} ]','{n} besetzt den Buchstaben [ {l} ]','🧹 Buchstabe [ {l} ] geleert','🏆 Glückwunsch! {n} gewinnt die Runde','Entworfen von','Abdullah Al-Amoudi','E-Mail:']}};
 let lg='ar';try{lg=localStorage.hrl||'ar'}catch(e){}if(!LANG[lg])lg='ar';
 const T=(k,v={})=>LANG[lg].s[K.indexOf(k)].replace(/\{(\w)\}/g,(m,x)=>v[x]??'');
 function applyLang(l){if(rolling)return;const old=lg,D=LANG[l];lg=l;try{localStorage.hrl=l}catch(e){}
@@ -217,7 +236,7 @@ while(q.length){const i=q.shift();if(go(i)){const p=[];for(let k=i;k!=-1;k=par[k
 nb(i).forEach(j=>{if(cells[j].t==t&&!(j in par)){par[j]=i;q.push(j)}})}return null}
 
 /* ===== الفوز والاحتفال ===== */
-function victory(t,p){over=true;win=p;sc[t]++;save();score();paint();
+function victory(t,p){if(R)R.child('state').set({open:false,winner:null});over=true;win=p;sc[t]++;save();score();paint();
 const cols=t=='red'?['#ef4444','#fca5a5','#fbbf24','#fff']:['#10b981','#6ee7b7','#fbbf24','#fff'];
 fanfare();clap(6);confetti(cols);setTimeout(()=>confetti(cols),1800);
 let n=0;const fw=setInterval(()=>{burst(Math.random()*innerWidth,Math.random()*innerHeight*.6,cols,70,8);tone(120+Math.random()*180,'sawtooth',.25,.07);if(++n>22)clearInterval(fw)},380);timers.push(fw);
@@ -226,21 +245,43 @@ setTimeout(()=>{$('wb').style.setProperty('--c',t=='red'?'#ef4444':'#10b981');$(
 
 /* ===== الحرف العشوائي: دوران مشوّق ===== */
 function spin(){if(rolling||over)return;const av=cells.map((s,i)=>s.t?-1:i).filter(i=>i>=0);if(!av.length){msg(T('full'));return}
-rolling=true;spot=null;paint();$('orb').classList.add('on');
+if(R)R.child('state').set({open:false,winner:null});rolling=true;spot=null;paint();$('orb').classList.add('on');
 const D=SPIN_MS,t0=performance.now();let prev=-1;msg(T('roll'));
 const step=()=>{const e=performance.now()-t0,p=Math.min(e/D,1);let j;do{j=av[Math.random()*av.length|0]}while(j===prev&&av.length>1);prev=j;spot=j;paint();$('orb').textContent=cells[j].l;tone(260+p*560,'triangle',.07,.12);
 if(e>=D)return done(j);setTimeout(step,45+Math.pow(p,3)*430)};step()}
 function done(j){rolling=false;$('orb').classList.remove('on');const l=cells[j].l;
 fanfare();const r=$('rev');r.textContent=l;r.classList.remove('go');void r.offsetWidth;r.classList.add('go');
 const[x,y]=center(j);burst(x,y,['#fde047','#f59e0b','#fff'],90,9);setTimeout(()=>burst(x,y,['#fde047','#fff'],60,6),250);
-msg(T('q',{l}))}
+msg(T('q',{l}));openBuzz()}
 
 addEventListener('keydown',e=>{if($('ask').classList.contains('show')){if(e.key=='Escape')$('an').click();return}if(e.target.isContentEditable||e.target.tagName=='SELECT')return;const k=e.key.toLowerCase();
 if(e.code=='Space'){e.preventDefault();spin()}else if(k=='r')setTool('red');else if(k=='g')setTool('green');else if(k=='e')setTool('clear');else if(k=='z')undo();else if(k=='s')shuffle();else if(k=='f')toggleFull()});
 
+/* ===== الجرس (متسابقو الجوال) ===== */
+let R=null,bst={},shown=null,cdT=null;const room=localStorage.hrroom||(localStorage.hrroom=String(Math.random()*9000+1000|0));
+function bzInit(){if(typeof firebase=='undefined'||!window.FB_CONFIG||String(FB_CONFIG.apiKey).startsWith('PASTE')){$('bz').style.opacity=.55;return}
+try{firebase.initializeApp(FB_CONFIG);R=firebase.database().ref('rooms/'+room);
+R.child('state').on('value',s=>{bst=s.val()||{};bzRender()});R.child('players').on('value',s=>plRender(s.val()||{}))}catch(e){R=null}}
+const noCfg=()=>msg('⚠️ أضف إعدادات Firebase في ملف firebase-config.js');
+function openBuzz(){if(R)R.child('state').set({open:true,winner:null,round:Date.now()})}
+function toggleBuzz(){if(!R)return noCfg();bst.open?R.child('state').set({open:false,winner:null}):openBuzz()}
+function bzRender(){$('bz').classList.toggle('on',!!bst.open);$('bz').textContent=bst.open?'🔔 مفتوح':'🔔 جرس';const w=bst.winner;
+if(w){if(shown!==w.t){shown=w.t;showWinner(w)}}else{shown=null;$('bn').classList.remove('show');clearInterval(cdT)}}
+function showWinner(w){const bn=$('bn');bn.style.setProperty('--c',w.team=='red'?'#ef4444':'#10b981');$('bw').textContent=(w.team=='red'?'🟥 ':'🟩 ')+w.name;
+bn.classList.add('show');tone(880,'sine',.5,.2);tone(1318,'sine',.7,.15,.08);$('bt').textContent=3;
+const t0=Date.now(),rg=bn.querySelector('.ring');clearInterval(cdT);rg.style.setProperty('--p','100%');
+cdT=setInterval(()=>{const l=Math.max(0,3-(Date.now()-t0)/1000);$('bt').textContent=l>0?Math.ceil(l):'⏰';rg.style.setProperty('--p',l/3*100+'%');if(l<=0){clearInterval(cdT);tone(200,'sawtooth',.4,.15)}},100)}
+function judge(ok){const w=bst.winner;if(!w)return;
+if(ok){R.child('state').set({open:false,winner:null});setTool(w.team);fanfare();
+if(spot!==null&&!cells[spot].t)clickCell(spot);else msg((w.team=='red'?'🟥 ':'🟩 ')+w.name+' ✔ اضغط على الحرف لتلوينه')}
+else{const bl=Object.assign({},bst.blocked||{});bl[w.id]=1;R.child('state').set({open:true,winner:null,blocked:bl,round:Date.now()});tone(180,'sawtooth',.4)}}
+function plRender(p){['red','green'].forEach(t=>{const e=$('pl-'+t);e.innerHTML='';Object.values(p).filter(x=>x.team==t).forEach(x=>{const s=document.createElement('span');s.textContent=x.name;e.appendChild(s)})})}
+function showJoin(){const u=new URL('buzzer.html?room='+room,location.href).href;$('rc').textContent=room;$('ru').textContent=u;$('qr').innerHTML='';
+if(window.QRCode)new QRCode($('qr'),{text:u,width:220,height:220});$('jn').classList.add('show');if(!R)noCfg()}
+function newRoom(){if(R)R.remove();localStorage.hrroom=String(Math.random()*9000+1000|0);location.reload()}
 Object.keys(LANG).forEach(k=>{const b=document.createElement('button');b.dataset.l=k;b.textContent=LANG[k].n;b.onclick=()=>{applyLang(k);$('lm').classList.remove('show')};$('lm').appendChild(b)});
 document.addEventListener('click',e=>{if(!e.target.closest('#lm,#lg'))$('lm').classList.remove('show')});
-build();deal();score();paint();applyLang(lg);setTool('red');msg(T('ready'));
+build();deal();score();paint();applyLang(lg);setTool('red');msg(T('ready'));bzInit();
 </script>
 </body>
 </html>
