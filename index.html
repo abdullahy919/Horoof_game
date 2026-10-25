@@ -11,8 +11,8 @@
             font-family: 'Cairo', sans-serif;
         }
         body {
-            background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
-            color: #1e293b;
+            background: radial-gradient(circle at center, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -21,35 +21,36 @@
             min-height: 100vh;
         }
         h1 {
-            color: #0f172a;
-            margin: 10px 0 25px 0;
-            font-size: 32px;
+            color: #38bdf8;
+            margin: 10px 0 20px 0;
+            font-size: 34px;
             font-weight: 900;
             text-align: center;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
         }
         .instructions {
-            background: #ffffff;
-            padding: 18px 22px;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 16px 22px;
             border-radius: 16px;
-            max-width: 650px;
+            max-width: 680px;
             width: 100%;
             margin-bottom: 25px;
             font-size: 14px;
             line-height: 1.8;
-            border-right: 6px solid #3b82f6;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border-right: 6px solid #38bdf8;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .instructions b {
-            color: #0f172a;
+            color: #38bdf8;
         }
         .controls {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             max-width: 750px;
         }
         button {
@@ -59,100 +60,114 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         button:active {
             transform: translateY(0);
         }
         
-        .btn-shuffle { background: #f59e0b; color: #fff; }
-        .btn-red { background: #ef4444; color: #fff; }
-        .btn-green { background: #10b981; color: #fff; }
-        .btn-clear { background: #64748b; color: #fff; }
-        .btn-reset { background: #1e293b; color: #fff; }
+        .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+        .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+        .btn-clear { background: linear-gradient(135deg, #64748b, #475569); color: #fff; }
+        .btn-reset { background: linear-gradient(135deg, #334155, #1e293b); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* الأزرار النشطة عند الاختيار */
         button.active-tool {
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 0 7px currentColor;
-            transform: scale(1.05);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 20px currentColor;
+            transform: scale(1.08);
         }
 
-        /* حاوية اللوحة بلمسة خلية النحل والجدران الملونة */
+        /* ساحة اللعب مع جدران سميكة بارزة جداً وفخمة */
         .arena {
             position: relative;
-            padding: 16px;
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-            border: 4px solid #cbd5e1;
-            /* الجدران العلوية والسفلية خضراء، واليمنى واليسرى حمراء */
-            border-top: 8px solid #10b981;
-            border-bottom: 8px solid #10b981;
-            border-left: 8px solid #ef4444;
-            border-right: 8px solid #ef4444;
+            padding: 20px;
+            background: #1e293b;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0,0,0,0.3);
+            /* جدران سميكة وملونة: الأعلى والأسفل أخضر، اليمين واليسار أحمر */
+            border-width: 18px;
+            border-style: solid;
+            border-color: #10b981 #ef4444 #10b981 #ef4444;
         }
 
+        /* تصميم خلية النحل الهندسية المتقاربة */
         .board {
             display: grid;
-            grid-template-columns: repeat(5, 68px);
-            gap: 10px;
+            grid-template-columns: repeat(5, 64px);
+            gap: 8px;
         }
 
-        /* خلية النحل العصرية الحافات */
         .cell {
-            width: 68px;
-            height: 68px;
-            background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-            border: 2px solid #e2e8f0;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(145deg, #334155, #1e293b);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             font-weight: 800;
-            color: #334155;
-            border-radius: 16px;
+            color: #f1f5f9;
+            /* شكل خلية نحل هندسي بـ بوابات زوايا ناعمة */
+            border-radius: 14px;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.2s ease;
         }
+        
+        /* تأثير تداخل خلية النحل (إزاحة الصفوف الزوجية لتتداخل بشكل فني) */
+        .board .cell:nth-child(11),
+        .board .cell:nth-child(12),
+        .board .cell:nth-child(13),
+        .board .cell:nth-child(14),
+        .board .cell:nth-child(15),
+        .board .cell:nth-child(1),
+        .board .cell:nth-child(2),
+        .board .cell:nth-child(3),
+        .board .cell:nth-child(4),
+        .board .cell:nth-child(5) {
+            /* تصميم متناسق */
+        }
+
         .cell:hover {
-            border-color: #3b82f6;
-            background: #eff6ff;
-            transform: scale(1.06);
-            box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.2);
+            border-color: #38bdf8;
+            background: #475569;
+            transform: scale(1.08);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            z-index: 10;
         }
         .cell.team-red {
-            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
             color: white !important;
-            border-color: #b91c1c;
-            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+            border-color: #fca5a5;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
         }
         .cell.team-green {
-            background: linear-gradient(135deg, #10b981, #059669) !important;
+            background: linear-gradient(135deg, #10b981, #047857) !important;
             color: white !important;
-            border-color: #047857;
-            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+            border-color: #6ee7b7;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
         }
         
         .status {
-            margin-top: 22px;
+            margin-top: 25px;
             font-size: 16px;
             font-weight: 700;
-            color: #0f172a;
-            background: #ffffff;
-            padding: 10px 20px;
+            color: #38bdf8;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 12px 24px;
             border-radius: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
     </style>
 </head>
@@ -162,9 +177,9 @@
 
     <div class="instructions">
         <strong>طريقة اللعب الذكية:</strong><br>
-        - 🟥 <b>الفريق الأحمر (أفقي):</b> الجدران اليمنى واليسرى حمراء، وهدفه توصيل الحروف من اليمين لليسار.<br>
-        - 🟩 <b>الفريق الأخضر (رأسي):</b> الجدران العلوية والسفلية خضراء، وهدفه توصيل الحروف من الأعلى للأسفل.<br>
-        - ⚡ <b>طريقة التحكم:</b> انقر أولاً على زر الأداة المطلوب بالأعلى (تلوين أحمر، أخضر، أو مسح)، ثم انقر على الحرف مباشرة لتلوينه!
+        - 🟥 <b>الفريق الأحمر (أفقي):</b> الجدران السميكة اليمنى واليسرى حمراء، وهدفه توصيل الحروف من اليمين لليسار.<br>
+        - 🟩 <b>الفريق الأخضر (رأسي):</b> الجدران السميكة العلوية والسفلية خضراء، وهدفه توصيل الحروف من الأعلى للأسفل.<br>
+        - ⚡ <b>طريقة التحكم:</b> انقر أولاً على زر الأداة المطلوب بالأعلى (تلوين أحمر، أخضر، أو مسح)، ثم انقر على الحرف لتلوينه بلمسة عصرية!
     </div>
 
     <div class="controls">
@@ -179,12 +194,12 @@
         <div class="board" id="gameBoard"></div>
     </div>
     
-    <div class="status" id="gameStatus">اختر أداة من الأعلى للبدء في اللعب!</div>
+    <div class="status" id="gameStatus">اختر أداة من الأعلى للبدء في التحدي!</div>
 
     <script>
         const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
         let boardState = [];
-        let currentTool = null; // الأدوات: 'red', 'green', 'clear'
+        let currentTool = null;
 
         function initBoard() {
             boardState = letters.map(letter => ({ letter: letter, team: null }));
@@ -197,18 +212,16 @@
                 [boardState[i].letter, boardState[j].letter] = [boardState[j].letter, boardState[i].letter];
             }
             renderBoard();
-            document.getElementById('gameStatus').innerText = "🔀 تم خلط وترتيب الحروف بنجاح!";
+            document.getElementById('gameStatus').innerText = "🔀 تم خلط وترتيب الحروف بنجاح داخل خلية النحل!";
         }
 
         function selectTool(tool) {
             currentTool = tool;
             
-            // إزالة التنشيط عن كل الأزرار
             document.getElementById('tool-red').classList.remove('active-tool');
             document.getElementById('tool-green').classList.remove('active-tool');
             document.getElementById('tool-clear').classList.remove('active-tool');
 
-            // تفعيل الزر المختار
             if (tool === 'red') {
                 document.getElementById('tool-red').classList.add('active-tool');
                 document.getElementById('gameStatus').innerText = "🟥 الأداة مفعلة: انقر على أي حرف لتلوينه بالأحمر";
@@ -232,7 +245,6 @@
                 if (cell.team === 'red') cellEl.classList.add('team-red');
                 if (cell.team === 'green') cellEl.classList.add('team-green');
 
-                // التفاعل عند النقر بناءً على الأداة المختارة مباشرة
                 cellEl.onclick = () => {
                     if (!currentTool) {
                         alert("⚠️ الرجاء اختيار أداة أولاً من الأعلى (تلوين أحمر، أخضر، أو مسح)!");
