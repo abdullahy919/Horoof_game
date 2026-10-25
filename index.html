@@ -3,125 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة حروف - تحدي الفريقين</title>
+    <title>لعبة حروف - التحدي الأكبر</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+            color: #1e293b;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
         h1 {
-            color: #38bdf8;
-            margin-bottom: 10px;
-            text-align: center;
+            color: #0369a1;
+            margin-bottom: 5px;
+            font-size: 28px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #0284c7;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
         .instructions {
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 12px;
             max-width: 600px;
+            width: 100%;
             margin-bottom: 20px;
             font-size: 14px;
-            line-height: 1.6;
-            border-right: 4px solid #38bdf8;
+            line-height: 1.7;
+            border-right: 5px solid #0284c7;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
+        }
+        .instructions b {
+            color: #0f172a;
         }
         .controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            max-width: 700px;
         }
         button {
-            padding: 10px 18px;
+            padding: 11px 20px;
             font-size: 15px;
             font-weight: bold;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            transition: all 0.2s ease;
         }
         button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+            opacity: 0.95;
         }
-        .btn-shuffle { background-color: #f59e0b; color: #fff; }
-        .btn-red { background-color: #ef4444; color: #fff; }
-        .btn-green { background-color: #10b981; color: #fff; }
-        .btn-clear { background-color: #64748b; color: #fff; }
-        .btn-reset { background-color: #dc2626; color: #fff; }
+        button:active {
+            transform: translateY(0);
+        }
+        .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+        .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+        .btn-clear { background: linear-gradient(135deg, #64748b, #475569); color: #fff; }
+        .btn-reset { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
 
+        .board-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
         .board {
             display: grid;
-            grid-template-columns: repeat(5, 60px);
-            gap: 8px;
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            grid-template-columns: repeat(5, 65px);
+            gap: 10px;
         }
         .cell {
-            width: 60px;
-            height: 60px;
-            background-color: #334155;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            border: 2px solid #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
-            border-radius: 8px;
+            color: #334155;
+            border-radius: 12px;
             cursor: pointer;
             user-select: none;
-            transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
         }
         .cell:hover {
-            background-color: #475569;
-        }
-        .cell.selected {
-            border: 3px solid #38bdf8;
+            border-color: #0284c7;
+            background: #f8fafc;
             transform: scale(1.05);
         }
+        .cell.selected {
+            border: 3px solid #0284c7;
+            background: #e0f2fe;
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+            transform: scale(1.08);
+        }
         .cell.team-red {
-            background-color: #ef4444 !important;
-            color: white;
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-color: #b91c1c;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         .cell.team-green {
-            background-color: #10b981 !important;
-            color: white;
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-color: #047857;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         .status {
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 16px;
             font-weight: bold;
-            color: #cbd5e1;
+            color: #0369a1;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
 
-    <h1>لعبة حروف - التحدي</h1>
+    <h1>🎮 لعبة حروف - التحدي الأكبر</h1>
+    <div class="subtitle">بإشراف وابتكار المطور الذكي</div>
+
     <div class="instructions">
         <strong>طريقة اللعب:</strong><br>
         - 🟥 <b>الفريق الأحمر (أفقي):</b> هدفه ربط الجدار الأيمن بالجدار الأيسر.<br>
         - 🟩 <b>الفريق الأخضر (رأسي):</b> هدفه ربط الجدار العلوي بالجدار السفلي.<br>
-        - اضغط على أي حرف لاختياره، ثم اختر الفريق لتلوينه، أو استخدم أزرار التحكم بالأسفل.
+        - 💡 <b>التحكم:</b> انقر على الحرف لاختياره، ثم استخدم أزرار التلوين أو المسح بالأعلى.
     </div>
 
     <div class="controls">
-        <button class="btn-shuffle" onclick="shuffleLetters()">خلط الحروف</button>
-        <button class="btn-red" onclick="colorSelected('red')">تلوين أحمر</button>
-        <button class="btn-green" onclick="colorSelected('green')">تلوين أخضر</button>
-        <button class="btn-clear" onclick="clearSelectedCell()">مسح حرف</button>
-        <button class="btn-reset" onclick="resetAll()">مسح الكل</button>
+        <button class="btn-shuffle" onclick="shuffleLetters()">🔀 خلط الحروف</button>
+        <button class="btn-red" onclick="colorSelected('red')">🟥 تلوين أحمر</button>
+        <button class="btn-green" onclick="colorSelected('green')">🟩 تلوين أخضر</button>
+        <button class="btn-clear" onclick="clearSelectedCell()">🧹 مسح حرف</button>
+        <button class="btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
     </div>
 
-    <div class="board" id="gameBoard"></div>
-    <div class="status" id="gameStatus">اختر حرفاً للبدء</div>
+    <div class="board-container">
+        <div class="board" id="gameBoard"></div>
+    </div>
+    
+    <div class="status" id="gameStatus">اختر حرفاً للبدء في التحدي!</div>
 
     <script>
         const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
@@ -140,7 +186,7 @@
             }
             selectedIndex = null;
             renderBoard();
-            document.getElementById('gameStatus').innerText = "تم خلط الحروف بنجاح!";
+            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف وإعادة ترتيبها بنجاح!";
         }
 
         function renderBoard() {
@@ -157,7 +203,7 @@
                 cellEl.onclick = () => {
                     selectedIndex = index;
                     renderBoard();
-                    document.getElementById('gameStatus').innerText = `تم اختيار الحرف: ${cell.letter}`;
+                    document.getElementById('gameStatus').innerText = `✨ تم اختيار الحرف: [ ${cell.letter} ]`;
                 };
 
                 boardEl.appendChild(cellEl);
@@ -166,32 +212,33 @@
 
         function colorSelected(team) {
             if (selectedIndex === null) {
-                alert("الرجاء اختيار حرف أولاً من اللوحة!");
+                alert("⚠️ الرجاء اختيار حرف أولاً من اللوحة!");
                 return;
             }
             boardState[selectedIndex].team = team;
             renderBoard();
-            document.getElementById('gameStatus').innerText = `تم تلوين الحرف لصالح الفريق الـ ${team === 'red' ? 'أحمر' : 'أخضر'}`;
+            const teamName = team === 'red' ? 'الأحمر (أفقي)' : 'الأخضر (رأسي)';
+            document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف لصالح الفريق ${teamName}`;
             selectedIndex = null;
         }
 
         function clearSelectedCell() {
             if (selectedIndex === null) {
-                alert("الرجاء اختيار حرف لمسحه!");
+                alert("⚠️ الرجاء اختيار حرف لمسح لونه!");
                 return;
             }
             boardState[selectedIndex].team = null;
             renderBoard();
-            document.getElementById('gameStatus').innerText = "تم مسح لون الحرف.";
+            document.getElementById('gameStatus').innerText = "🧹 تم مسح لون الحرف بنجاح.";
             selectedIndex = null;
         }
 
         function resetAll() {
-            if (confirm("هل أنت متأكد من مسح الحروف كاملة وإعادة تعيين اللعبة؟")) {
+            if (confirm("⚠️ هل أنت متأكد من مسح جميع الحروف الملونة وإعادة تعيين اللعبة من جديد؟")) {
                 boardState.forEach(cell => cell.team = null);
                 selectedIndex = null;
                 renderBoard();
-                document.getElementById('gameStatus').innerText = "تم مسح اللوحة بالكامل.";
+                document.getElementById('gameStatus').innerText = "🔄 تم مسح اللوحة بالكامل وبدء جولة جديدة.";
             }
         }
 
