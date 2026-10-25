@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة حروف - تحدي الفريقين</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .instructions {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-right: 4px solid #38bdf8;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .btn-shuffle { background-color: #f59e0b; color: #fff; }
+        .btn-red { background-color: #ef4444; color: #fff; }
+        .btn-green { background-color: #10b981; color: #fff; }
+        .btn-clear { background-color: #64748b; color: #fff; }
+        .btn-reset { background-color: #dc2626; color: #fff; }
 
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 8px;
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+        .cell:hover {
+            background-color: #475569;
+        }
+        .cell.selected {
+            border: 3px solid #38bdf8;
+            transform: scale(1.05);
+        }
+        .cell.team-red {
+            background-color: #ef4444 !important;
+            color: white;
+        }
+        .cell.team-green {
+            background-color: #10b981 !important;
+            color: white;
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>لعبة حروف - التحدي</h1>
+    <div class="instructions">
+        <strong>طريقة اللعب:</strong><br>
+        - 🟥 <b>الفريق الأحمر (أفقي):</b> هدفه ربط الجدار الأيمن بالجدار الأيسر.<br>
+        - 🟩 <b>الفريق الأخضر (رأسي):</b> هدفه ربط الجدار العلوي بالجدار السفلي.<br>
+        - اضغط على أي حرف لاختياره، ثم اختر الفريق لتلوينه، أو استخدم أزرار التحكم بالأسفل.
+    </div>
+
+    <div class="controls">
+        <button class="btn-shuffle" onclick="shuffleLetters()">خلط الحروف</button>
+        <button class="btn-red" onclick="colorSelected('red')">تلوين أحمر</button>
+        <button class="btn-green" onclick="colorSelected('green')">تلوين أخضر</button>
+        <button class="btn-clear" onclick="clearSelectedCell()">مسح حرف</button>
+        <button class="btn-reset" onclick="resetAll()">مسح الكل</button>
+    </div>
+
+    <div class="board" id="gameBoard"></div>
+    <div class="status" id="gameStatus">اختر حرفاً للبدء</div>
+
+    <script>
+        const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
+        let boardState = [];
+        let selectedIndex = null;
+
+        function initBoard() {
+            boardState = letters.map(letter => ({ letter: letter, team: null }));
+            renderBoard();
+        }
+
+        function shuffleLetters() {
+            for (let i = boardState.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [boardState[i].letter, boardState[j].letter] = [boardState[j].letter, boardState[i].letter];
+            }
+            selectedIndex = null;
+            renderBoard();
+            document.getElementById('gameStatus').innerText = "تم خلط الحروف بنجاح!";
+        }
+
+        function renderBoard() {
+            const boardEl = document.getElementById('gameBoard');
+            boardEl.innerHTML = '';
+            boardState.forEach((cell, index) => {
+                const cellEl = document.createElement('div');
+                cellEl.classList.add('cell');
+                cellEl.innerText = cell.letter;
+                if (cell.team === 'red') cellEl.classList.add('team-red');
+                if (cell.team === 'green') cellEl.classList.add('team-green');
+                if (index === selectedIndex) cellEl.classList.add('selected');
+
+                cellEl.onclick = () => {
+                    selectedIndex = index;
+                    renderBoard();
+                    document.getElementById('gameStatus').innerText = `تم اختيار الحرف: ${cell.letter}`;
+                };
+
+                boardEl.appendChild(cellEl);
+            });
+        }
+
+        function colorSelected(team) {
+            if (selectedIndex === null) {
+                alert("الرجاء اختيار حرف أولاً من اللوحة!");
+                return;
+            }
+            boardState[selectedIndex].team = team;
+            renderBoard();
+            document.getElementById('gameStatus').innerText = `تم تلوين الحرف لصالح الفريق الـ ${team === 'red' ? 'أحمر' : 'أخضر'}`;
+            selectedIndex = null;
+        }
+
+        function clearSelectedCell() {
+            if (selectedIndex === null) {
+                alert("الرجاء اختيار حرف لمسحه!");
+                return;
+            }
+            boardState[selectedIndex].team = null;
+            renderBoard();
+            document.getElementById('gameStatus').innerText = "تم مسح لون الحرف.";
+            selectedIndex = null;
+        }
+
+        function resetAll() {
+            if (confirm("هل أنت متأكد من مسح الحروف كاملة وإعادة تعيين اللعبة؟")) {
+                boardState.forEach(cell => cell.team = null);
+                selectedIndex = null;
+                renderBoard();
+                document.getElementById('gameStatus').innerText = "تم مسح اللوحة بالكامل.";
+            }
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
