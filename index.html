@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة حروف - التحدي الأكبر</title>
+    <title>لعبة الحروف مع عبد الله</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+            background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
             color: #1e293b;
             margin: 0;
             padding: 20px;
@@ -20,29 +21,25 @@
             min-height: 100vh;
         }
         h1 {
-            color: #0369a1;
-            margin-bottom: 5px;
-            font-size: 28px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .subtitle {
-            font-size: 14px;
-            color: #0284c7;
-            margin-bottom: 20px;
-            font-weight: 600;
+            color: #0f172a;
+            margin: 10px 0 25px 0;
+            font-size: 32px;
+            font-weight: 900;
+            text-align: center;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         .instructions {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            border-radius: 12px;
-            max-width: 600px;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 16px;
+            max-width: 650px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-size: 14px;
-            line-height: 1.7;
-            border-right: 5px solid #0284c7;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
+            line-height: 1.8;
+            border-right: 6px solid #3b82f6;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         .instructions b {
             color: #0f172a;
@@ -52,127 +49,142 @@
             gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 25px;
-            max-width: 700px;
+            margin-bottom: 30px;
+            max-width: 750px;
         }
         button {
-            padding: 11px 20px;
+            padding: 12px 22px;
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 700;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-            opacity: 0.95;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
         }
         button:active {
             transform: translateY(0);
         }
-        .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-        .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-        .btn-clear { background: linear-gradient(135deg, #64748b, #475569); color: #fff; }
-        .btn-reset { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
+        
+        .btn-shuffle { background: #f59e0b; color: #fff; }
+        .btn-red { background: #ef4444; color: #fff; }
+        .btn-green { background: #10b981; color: #fff; }
+        .btn-clear { background: #64748b; color: #fff; }
+        .btn-reset { background: #1e293b; color: #fff; }
 
-        .board-container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.8);
+        /* الأزرار النشطة عند الاختيار */
+        button.active-tool {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 0 7px currentColor;
+            transform: scale(1.05);
         }
+
+        /* حاوية اللوحة بلمسة خلية النحل والجدران الملونة */
+        .arena {
+            position: relative;
+            padding: 16px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            border: 4px solid #cbd5e1;
+            /* الجدران العلوية والسفلية خضراء، واليمنى واليسرى حمراء */
+            border-top: 8px solid #10b981;
+            border-bottom: 8px solid #10b981;
+            border-left: 8px solid #ef4444;
+            border-right: 8px solid #ef4444;
+        }
+
         .board {
             display: grid;
-            grid-template-columns: repeat(5, 65px);
+            grid-template-columns: repeat(5, 68px);
             gap: 10px;
         }
+
+        /* خلية النحل العصرية الحافات */
         .cell {
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #ffffff, #f1f5f9);
-            border: 2px solid #cbd5e1;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+            border: 2px solid #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
             color: #334155;
-            border-radius: 12px;
+            border-radius: 16px;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.03);
             transition: all 0.2s ease;
         }
         .cell:hover {
-            border-color: #0284c7;
-            background: #f8fafc;
-            transform: scale(1.05);
-        }
-        .cell.selected {
-            border: 3px solid #0284c7;
-            background: #e0f2fe;
-            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
-            transform: scale(1.08);
+            border-color: #3b82f6;
+            background: #eff6ff;
+            transform: scale(1.06);
+            box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.2);
         }
         .cell.team-red {
             background: linear-gradient(135deg, #ef4444, #dc2626) !important;
             color: white !important;
             border-color: #b91c1c;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
         }
         .cell.team-green {
             background: linear-gradient(135deg, #10b981, #059669) !important;
             color: white !important;
             border-color: #047857;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
         }
+        
         .status {
-            margin-top: 20px;
+            margin-top: 22px;
             font-size: 16px;
-            font-weight: bold;
-            color: #0369a1;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 8px 16px;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-weight: 700;
+            color: #0f172a;
+            background: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
         }
     </style>
 </head>
 <body>
 
-    <h1>🎮 لعبة حروف - التحدي الأكبر</h1>
-    <div class="subtitle">بإشراف وابتكار المطور الذكي</div>
+    <h1>🎮 لعبة الحروف مع عبد الله</h1>
 
     <div class="instructions">
-        <strong>طريقة اللعب:</strong><br>
-        - 🟥 <b>الفريق الأحمر (أفقي):</b> هدفه ربط الجدار الأيمن بالجدار الأيسر.<br>
-        - 🟩 <b>الفريق الأخضر (رأسي):</b> هدفه ربط الجدار العلوي بالجدار السفلي.<br>
-        - 💡 <b>التحكم:</b> انقر على الحرف لاختياره، ثم استخدم أزرار التلوين أو المسح بالأعلى.
+        <strong>طريقة اللعب الذكية:</strong><br>
+        - 🟥 <b>الفريق الأحمر (أفقي):</b> الجدران اليمنى واليسرى حمراء، وهدفه توصيل الحروف من اليمين لليسار.<br>
+        - 🟩 <b>الفريق الأخضر (رأسي):</b> الجدران العلوية والسفلية خضراء، وهدفه توصيل الحروف من الأعلى للأسفل.<br>
+        - ⚡ <b>طريقة التحكم:</b> انقر أولاً على زر الأداة المطلوب بالأعلى (تلوين أحمر، أخضر، أو مسح)، ثم انقر على الحرف مباشرة لتلوينه!
     </div>
 
     <div class="controls">
         <button class="btn-shuffle" onclick="shuffleLetters()">🔀 خلط الحروف</button>
-        <button class="btn-red" onclick="colorSelected('red')">🟥 تلوين أحمر</button>
-        <button class="btn-green" onclick="colorSelected('green')">🟩 تلوين أخضر</button>
-        <button class="btn-clear" onclick="clearSelectedCell()">🧹 مسح حرف</button>
+        <button class="btn-red" id="tool-red" onclick="selectTool('red')">🟥 تلوين أحمر</button>
+        <button class="btn-green" id="tool-green" onclick="selectTool('green')">🟩 تلوين أخضر</button>
+        <button class="btn-clear" id="tool-clear" onclick="selectTool('clear')">🧹 مسح حرف</button>
         <button class="btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
     </div>
 
-    <div class="board-container">
+    <div class="arena">
         <div class="board" id="gameBoard"></div>
     </div>
     
-    <div class="status" id="gameStatus">اختر حرفاً للبدء في التحدي!</div>
+    <div class="status" id="gameStatus">اختر أداة من الأعلى للبدء في اللعب!</div>
 
     <script>
         const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
         let boardState = [];
-        let selectedIndex = null;
+        let currentTool = null; // الأدوات: 'red', 'green', 'clear'
 
         function initBoard() {
             boardState = letters.map(letter => ({ letter: letter, team: null }));
@@ -184,9 +196,29 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [boardState[i].letter, boardState[j].letter] = [boardState[j].letter, boardState[i].letter];
             }
-            selectedIndex = null;
             renderBoard();
-            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف وإعادة ترتيبها بنجاح!";
+            document.getElementById('gameStatus').innerText = "🔀 تم خلط وترتيب الحروف بنجاح!";
+        }
+
+        function selectTool(tool) {
+            currentTool = tool;
+            
+            // إزالة التنشيط عن كل الأزرار
+            document.getElementById('tool-red').classList.remove('active-tool');
+            document.getElementById('tool-green').classList.remove('active-tool');
+            document.getElementById('tool-clear').classList.remove('active-tool');
+
+            // تفعيل الزر المختار
+            if (tool === 'red') {
+                document.getElementById('tool-red').classList.add('active-tool');
+                document.getElementById('gameStatus').innerText = "🟥 الأداة مفعلة: انقر على أي حرف لتلوينه بالأحمر";
+            } else if (tool === 'green') {
+                document.getElementById('tool-green').classList.add('active-tool');
+                document.getElementById('gameStatus').innerText = "🟩 الأداة مفعلة: انقر على أي حرف لتلوينه بالأخضر";
+            } else if (tool === 'clear') {
+                document.getElementById('tool-clear').classList.add('active-tool');
+                document.getElementById('gameStatus').innerText = "🧹 الأداة مفعلة: انقر على أي حرف لمسح لونه";
+            }
         }
 
         function renderBoard() {
@@ -196,49 +228,44 @@
                 const cellEl = document.createElement('div');
                 cellEl.classList.add('cell');
                 cellEl.innerText = cell.letter;
+                
                 if (cell.team === 'red') cellEl.classList.add('team-red');
                 if (cell.team === 'green') cellEl.classList.add('team-green');
-                if (index === selectedIndex) cellEl.classList.add('selected');
 
+                // التفاعل عند النقر بناءً على الأداة المختارة مباشرة
                 cellEl.onclick = () => {
-                    selectedIndex = index;
+                    if (!currentTool) {
+                        alert("⚠️ الرجاء اختيار أداة أولاً من الأعلى (تلوين أحمر، أخضر، أو مسح)!");
+                        return;
+                    }
+
+                    if (currentTool === 'red') {
+                        boardState[index].team = 'red';
+                        document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف [ ${cell.letter} ] لصالح الفريق الأحمر`;
+                    } else if (currentTool === 'green') {
+                        boardState[index].team = 'green';
+                        document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف [ ${cell.letter} ] لصالح الفريق الأخضر`;
+                    } else if (currentTool === 'clear') {
+                        boardState[index].team = null;
+                        document.getElementById('gameStatus').innerText = `🧹 تم مسح لون الحرف [ ${cell.letter} ]`;
+                    }
+                    
                     renderBoard();
-                    document.getElementById('gameStatus').innerText = `✨ تم اختيار الحرف: [ ${cell.letter} ]`;
                 };
 
                 boardEl.appendChild(cellEl);
             });
         }
 
-        function colorSelected(team) {
-            if (selectedIndex === null) {
-                alert("⚠️ الرجاء اختيار حرف أولاً من اللوحة!");
-                return;
-            }
-            boardState[selectedIndex].team = team;
-            renderBoard();
-            const teamName = team === 'red' ? 'الأحمر (أفقي)' : 'الأخضر (رأسي)';
-            document.getElementById('gameStatus').innerText = `🎯 تم تلوين الحرف لصالح الفريق ${teamName}`;
-            selectedIndex = null;
-        }
-
-        function clearSelectedCell() {
-            if (selectedIndex === null) {
-                alert("⚠️ الرجاء اختيار حرف لمسح لونه!");
-                return;
-            }
-            boardState[selectedIndex].team = null;
-            renderBoard();
-            document.getElementById('gameStatus').innerText = "🧹 تم مسح لون الحرف بنجاح.";
-            selectedIndex = null;
-        }
-
         function resetAll() {
-            if (confirm("⚠️ هل أنت متأكد من مسح جميع الحروف الملونة وإعادة تعيين اللعبة من جديد؟")) {
+            if (confirm("⚠️ هل أنت متأكد من مسح اللوحة بالكامل وإعادة ضبط اللعبة؟")) {
                 boardState.forEach(cell => cell.team = null);
-                selectedIndex = null;
+                currentTool = null;
+                document.getElementById('tool-red').classList.remove('active-tool');
+                document.getElementById('tool-green').classList.remove('active-tool');
+                document.getElementById('tool-clear').classList.remove('active-tool');
                 renderBoard();
-                document.getElementById('gameStatus').innerText = "🔄 تم مسح اللوحة بالكامل وبدء جولة جديدة.";
+                document.getElementById('gameStatus').innerText = "🔄 تم إعادة ضبط اللوحة بنجاح.";
             }
         }
 
