@@ -66,7 +66,7 @@ function start(){$('join').hidden=true;$('play').hidden=false;
   db.ref('.info/connected').on('value',s=>{if(s.val()){P.onDisconnect().remove();P.set({name:me.name,team:me.team})}});
   R.child('state').on('value',s=>render(s.val()||{}));
   $('bell').onpointerdown=()=>{if(!$('bell').classList.contains('open'))return;navigator.vibrate&&navigator.vibrate(50);
-    R.child('state').transaction(c=>{if(c&&c.open&&!c.winner&&!(c.blocked&&c.blocked[me.id])){c.winner={id:me.id,name:me.name,team:me.team,t:Date.now()};c.open=false;return c}})};
+    R.child('state').transaction(c=>{if(c&&c.open&&!c.winner&&!(c.blocked&&c.blocked[me.id])){c.winner={id:me.id,name:me.name,team:me.team,t:Date.now()};return c}})};
   $('chg').onclick=()=>{P.remove();localStorage.removeItem('hrp');location.reload()}}
 if(typeof firebase=='undefined'||!C||String(C.apiKey).startsWith('PASTE')){$('err').hidden=false;$('join').hidden=true}
 else{firebase.initializeApp(C);db=firebase.database();$('rm').value=room;if(me){$('nm').value=me.name;pick(me.team)}if(me&&room)start()}
