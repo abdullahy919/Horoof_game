@@ -4,47 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة الحروف مع عبد الله</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* الوضع النهاري المشرق (الافتراضي كما طلبت) */
-            --bg-main: radial-gradient(circle at 50% 20%, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+            /* الوضع النهاري الساطع (مثالي للبروجكتر والإضاءة) */
+            --bg-main: radial-gradient(circle at 50% 30%, #ffffff 0%, #f1f5f9 55%, #cbd5e1 100%);
             --text-primary: #0f172a;
-            --panel-bg: rgba(255, 255, 255, 0.85);
-            --panel-border: rgba(203, 213, 225, 0.8);
-            --arena-bg: #f8fafc;
-            --arena-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.18), inset 0 4px 20px rgba(255, 255, 255, 0.9);
+            --dock-bg: rgba(255, 255, 255, 0.9);
+            --dock-border: rgba(203, 213, 225, 0.9);
+            --arena-bg: radial-gradient(circle at center, #ffffff 0%, #f8fafc 70%, #e2e8f0 100%);
+            --arena-inner-shadow: inset 0 0 35px rgba(15, 23, 42, 0.08);
             
-            /* ألوان الخلية العادية (3D) */
-            --hex-border: #cbd5e1;
-            --hex-bg: linear-gradient(160deg, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
-            --hex-text: #1e293b;
-            --hex-shadow: drop-shadow(0 8px 10px rgba(15, 23, 42, 0.12));
-            
-            /* ألوان الفريق الأحمر (ياقوتي متألق) */
-            --red-border: #fca5a5;
-            --red-bg: linear-gradient(145deg, #ff5f6d 0%, #ef4444 45%, #b91c1c 100%);
-            --red-glow: drop-shadow(0 8px 18px rgba(239, 68, 68, 0.55));
-            
-            /* ألوان الفريق الأخضر (زمردي متألق) */
-            --green-border: #6ee7b7;
-            --green-bg: linear-gradient(145deg, #34d399 0%, #10b981 45%, #047857 100%);
-            --green-glow: drop-shadow(0 8px 18px rgba(16, 185, 129, 0.55));
+            /* الخلية السداسية ثلاثية الأبعاد */
+            --hex-outer: linear-gradient(145deg, #cbd5e1, #94a3b8);
+            --hex-inner: linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #e2e8f0 100%);
+            --hex-text: #0f172a;
+            --hex-shadow: drop-shadow(0 10px 14px rgba(15, 23, 42, 0.16));
+
+            /* ألوان الفريق الأحمر (ياقوتي مشع) */
+            --red-outer: linear-gradient(145deg, #fecaca, #ef4444);
+            --red-inner: linear-gradient(160deg, #ff6b6b 0%, #ef4444 45%, #991b1b 100%);
+            --red-glow: drop-shadow(0 12px 24px rgba(239, 68, 68, 0.65));
+
+            /* ألوان الفريق الأخضر (زمردي مشع) */
+            --green-outer: linear-gradient(145deg, #a7f3d0, #10b981);
+            --green-inner: linear-gradient(160deg, #34d399 0%, #10b981 45%, #065f46 100%);
+            --green-glow: drop-shadow(0 12px 24px rgba(16, 185, 129, 0.65));
         }
 
         body.dark-mode {
             /* الوضع الليلي الفخم */
-            --bg-main: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 70%, #020617 100%);
+            --bg-main: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 65%, #020617 100%);
             --text-primary: #f8fafc;
-            --panel-bg: rgba(30, 41, 59, 0.75);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --arena-bg: #0f172a;
-            --arena-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.7), inset 0 2px 15px rgba(255, 255, 255, 0.05);
-            
-            --hex-border: #475569;
-            --hex-bg: linear-gradient(160deg, #334155 0%, #1e293b 65%, #0f172a 100%);
+            --dock-bg: rgba(30, 41, 59, 0.85);
+            --dock-border: rgba(255, 255, 255, 0.12);
+            --arena-bg: radial-gradient(circle at center, #1e293b 0%, #0f172a 85%);
+            --arena-inner-shadow: inset 0 0 45px rgba(0, 0, 0, 0.6);
+
+            --hex-outer: linear-gradient(145deg, #64748b, #334155);
+            --hex-inner: linear-gradient(165deg, #334155 0%, #1e293b 60%, #0f172a 100%);
             --hex-text: #f8fafc;
-            --hex-shadow: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
+            --hex-shadow: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55));
         }
 
         * {
@@ -58,35 +58,42 @@
             background: var(--bg-main);
             color: var(--text-primary);
             margin: 0;
-            padding: 20px 15px;
+            padding: 12px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-between;
             min-height: 100vh;
             overflow-x: hidden;
             transition: background 0.4s ease;
         }
 
-        /* الهيدر وشريط العنوان */
-        .header-bar {
+        /* الشريط العلوي المدمج (يوفر مساحة أكبر للخلية في البروجكتر) */
+        .top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            max-width: 780px;
-            margin-bottom: 18px;
-            padding: 12px 24px;
-            background: var(--panel-bg);
+            max-width: 1180px;
+            padding: 10px 24px;
+            background: var(--dock-bg);
             backdrop-filter: blur(16px);
-            border-radius: 24px;
-            border: 1px solid var(--panel-border);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            border-radius: 22px;
+            border: 1px solid var(--dock-border);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.12);
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .title-wrapper {
+        .brand {
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        .brand-icon {
+            font-size: 34px;
+            filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.4));
         }
 
         h1 {
@@ -96,7 +103,6 @@
             background: linear-gradient(135deg, #0284c7, #2563eb, #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
         }
 
         body.dark-mode h1 {
@@ -105,78 +111,41 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .top-actions {
+        /* أدوات التحكم الرئيسية في وسط الشريط */
+        .tools-group {
             display: flex;
             gap: 10px;
-        }
-
-        .icon-btn {
-            background: var(--arena-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--panel-border);
-            padding: 8px 16px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .icon-btn:hover {
-            transform: translateY(-2px);
-            border-color: #3b82f6;
-        }
-
-        /* شريط أدوات التحكم */
-        .controls-dock {
-            display: flex;
-            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
-            padding: 12px 18px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            border-radius: 22px;
-            border: 1px solid var(--panel-border);
-            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.12);
-            margin-bottom: 25px;
+            align-items: center;
         }
 
         .tool-btn {
-            padding: 11px 22px;
-            font-size: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
             font-weight: 800;
             border: none;
             border-radius: 14px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
             gap: 8px;
             color: #fff;
             position: relative;
-            overflow: hidden;
         }
 
         .tool-btn::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 45%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
             border-radius: 14px 14px 0 0;
             pointer-events: none;
         }
 
         .tool-btn:hover {
-            transform: translateY(-3px) scale(1.03);
-        }
-
-        .tool-btn:active {
-            transform: translateY(1px) scale(0.98);
+            transform: translateY(-3px) scale(1.04);
         }
 
         .btn-shuffle { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.35); }
@@ -186,16 +155,74 @@
         .btn-reset { background: linear-gradient(135deg, #334155, #0f172a); box-shadow: 0 6px 15px rgba(15, 23, 42, 0.35); }
 
         .tool-btn.active-tool {
-            transform: translateY(-4px) scale(1.08);
+            transform: translateY(-3px) scale(1.08);
             outline: 3px solid var(--text-primary);
             outline-offset: 3px;
         }
 
-        /* ساحة خلية النحل مع الجدران التنافسية العملاقة */
-        .arena-wrapper {
+        /* أزرار النظام والمؤقت */
+        .system-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sys-btn {
+            background: var(--arena-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--dock-border);
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .sys-btn:hover {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+
+        .timer-btn {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            border: none;
+            min-width: 95px;
+            justify-content: center;
+        }
+
+        .timer-btn.running {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            animation: pulseTimer 1s infinite;
+        }
+
+        @keyframes pulseTimer {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        /* ====================================================
+           المربع العملاق والخلية المتوازنة هندسياً 100%
+           ==================================================== */
+        .stage-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        /* الإطار الخارجي الملون (أخضر فوق وتحت، أحمر يمين ويسار) بدون أي نصوص */
+        .arena-frame {
             position: relative;
-            padding: 26px;
-            border-radius: 40px;
+            padding: 28px; /* سماكة الجدار الملون */
+            border-radius: 48px;
             background: conic-gradient(
                 from 45deg,
                 #ef4444 0deg 90deg,
@@ -203,265 +230,266 @@
                 #ef4444 180deg 270deg,
                 #10b981 270deg 360deg
             );
-            box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.28);
+            box-shadow: 
+                0 30px 70px -15px rgba(0, 0, 0, 0.35),
+                0 0 35px rgba(16, 185, 129, 0.2),
+                0 0 35px rgba(239, 68, 68, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* شارات الجدران لتوضيح اتجاه كل فريق */
-        .wall-badge {
-            position: absolute;
-            font-size: 12px;
-            font-weight: 900;
-            color: #ffffff;
-            padding: 3px 14px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-            z-index: 5;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .wall-top { top: 4px; background: #047857; }
-        .wall-bottom { bottom: 4px; background: #047857; }
-        .wall-right { right: -28px; background: #b91c1c; transform: rotate(90deg); }
-        .wall-left { left: -28px; background: #b91c1c; transform: rotate(-90deg); }
-
-        .arena-inner {
+        /* خط إضاءة داخلي يفصل الجدار عن الساحة */
+        .arena-board {
             background: var(--arena-bg);
-            padding: 35px 45px 35px 25px;
-            border-radius: 24px;
-            box-shadow: var(--arena-shadow);
-            transition: background 0.4s ease;
+            box-shadow: var(--arena-inner-shadow);
+            border-radius: 30px;
+            /* مساحات متساوية ودقيقة جداً من جميع الجهات لتوسيط الخلية 100% */
+            padding: 36px 68px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255, 255, 255, 0.5);
         }
 
-        /* هندسة خلية النحل المتداخلة الحقيقية (Honeycomb Layout) */
+        /* شبكة خلية النحل العملاقة */
         .honeycomb {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .hex-row {
             display: flex;
-            gap: 8px;
-            margin-top: -20px; /* تداخل الصفوف هندسياً */
+            gap: 10px;
+            margin-top: -27px; /* التعشيق العمودي الدقيق للخلايا السداسية */
         }
 
         .hex-row:first-child {
             margin-top: 0;
         }
 
-        /* إزاحة الصفوف الزوجية لتعشيق خلية النحل */
-        .hex-row.even {
-            transform: translateX(-44px);
+        /* 
+           سر التوسيط الهندسي المتماثل (Symmetrical Honeycomb Offset):
+           الخلية عرضها 108px + الفراغ 10px = 118px.
+           ربع المسافة يميناً للصفوف الفردية (+29.5px) وربع المسافة يساراً للصفوف الزوجية (-29.5px).
+           هكذا تتعشق الخلايا 100% وتبقى اللوحة في المنتصف تماماً بدون أي ميلان!
+        */
+        .hex-row.odd-row {
+            transform: translateX(29.5px);
         }
 
-        /* الخلية السداسية ثلاثية الأبعاد */
+        .hex-row.even-row {
+            transform: translateX(-29.5px);
+        }
+
+        /* حجم الخلية العملاق للبروجكتر */
         .hex-wrapper {
-            width: 82px;
-            height: 94px;
+            width: 108px;
+            height: 124px;
             position: relative;
             cursor: pointer;
             filter: var(--hex-shadow);
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
             z-index: 1;
         }
 
-        /* الإطار الخارجي للخلية */
         .hex-outer {
             width: 100%;
             height: 100%;
-            background: var(--hex-border);
+            background: var(--hex-outer);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            padding: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
-            transition: background 0.3s ease;
         }
 
-        /* القلب الداخلي البلوري للخلية */
         .hex-inner {
             width: 100%;
             height: 100%;
-            background: var(--hex-bg);
+            background: var(--hex-inner);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: background 0.3s ease;
         }
 
-        /* اللمعة الزجاجية العلوية داخل الخلية */
+        /* تاج الإضاءة الكريستالي أعلى كل خلية */
         .hex-inner::before {
             content: '';
             position: absolute;
             top: 4%;
-            left: 15%;
-            right: 15%;
-            height: 38%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0));
-            clip-path: polygon(50% 0%, 100% 45%, 80% 100%, 20% 100%, 0% 45%);
+            left: 14%;
+            right: 14%;
+            height: 40%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+            clip-path: polygon(50% 0%, 100% 45%, 82% 100%, 18% 100%, 0% 45%);
             pointer-events: none;
         }
 
         body.dark-mode .hex-inner::before {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
         }
 
-        /* تصميم الحرف المتألق داخل الخلية */
+        /* الحرف العملاق الواضح للجمهور */
         .hex-letter {
             font-family: 'Tajawal', sans-serif;
-            font-size: 32px;
+            font-size: 44px;
             font-weight: 900;
             color: var(--hex-text);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
             z-index: 2;
-            transition: transform 0.2s ease, color 0.2s ease;
+            line-height: 1;
         }
 
-        /* تأثيرات التمرير والضغط على الخلية */
+        /* تفاعل الخلية عند التمرير */
         .hex-wrapper:hover {
-            transform: scale(1.13) translateY(-4px);
-            z-index: 20;
-            filter: drop-shadow(0 14px 20px rgba(59, 130, 246, 0.4));
+            transform: scale(1.14) translateY(-5px);
+            z-index: 30;
+            filter: drop-shadow(0 18px 25px rgba(59, 130, 246, 0.45));
         }
 
         .hex-wrapper:hover .hex-outer {
-            background: #38bdf8;
+            background: linear-gradient(145deg, #38bdf8, #2563eb);
         }
 
-        .hex-wrapper:active {
-            transform: scale(0.95);
-        }
-
-        /* حالة تلوين الفريق الأحمر */
+        /* تلوين الفريق الأحمر */
         .hex-wrapper.team-red {
             filter: var(--red-glow);
-            z-index: 5;
+            z-index: 10;
         }
         .hex-wrapper.team-red .hex-outer {
-            background: var(--red-border);
+            background: var(--red-outer);
         }
         .hex-wrapper.team-red .hex-inner {
-            background: var(--red-bg);
+            background: var(--red-inner);
         }
         .hex-wrapper.team-red .hex-letter {
             color: #ffffff;
-            text-shadow: 0 3px 6px rgba(127, 29, 29, 0.7);
+            text-shadow: 0 4px 10px rgba(127, 29, 29, 0.85);
             transform: scale(1.08);
         }
 
-        /* حالة تلوين الفريق الأخضر */
+        /* تلوين الفريق الأخضر */
         .hex-wrapper.team-green {
             filter: var(--green-glow);
-            z-index: 5;
+            z-index: 10;
         }
         .hex-wrapper.team-green .hex-outer {
-            background: var(--green-border);
+            background: var(--green-outer);
         }
         .hex-wrapper.team-green .hex-inner {
-            background: var(--green-bg);
+            background: var(--green-inner);
         }
         .hex-wrapper.team-green .hex-letter {
             color: #ffffff;
-            text-shadow: 0 3px 6px rgba(6, 78, 59, 0.7);
+            text-shadow: 0 4px 10px rgba(6, 78, 59, 0.85);
             transform: scale(1.08);
         }
 
-        /* حركة نبض عند التلوين */
-        @keyframes popIn {
-            0% { transform: scale(0.8) rotateY(90deg); }
-            60% { transform: scale(1.15) rotateY(-10deg); }
+        @keyframes popHex {
+            0% { transform: scale(0.7) rotateY(90deg); }
+            65% { transform: scale(1.18) rotateY(-8deg); }
             100% { transform: scale(1) rotateY(0deg); }
         }
         .animate-pop {
-            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: popHex 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* شريط الحالة السفلي */
-        .status-pill {
-            margin-top: 25px;
-            font-size: 16px;
+        /* شريط الحالة السفلي الأنيق */
+        .status-bar {
+            font-size: 17px;
             font-weight: 800;
             color: var(--text-primary);
-            background: var(--panel-bg);
+            background: var(--dock-bg);
             backdrop-filter: blur(12px);
-            padding: 12px 30px;
+            padding: 10px 32px;
             border-radius: 30px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            border: 2px solid var(--panel-border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--dock-border);
         }
 
-        /* تجاوب الشاشات الصغيرة والجوال */
-        @media (max-width: 600px) {
-            .header-bar { flex-direction: column; gap: 12px; text-align: center; }
-            .arena-inner { padding: 25px 32px 25px 14px; }
+        /* التجاوب مع الشاشات المتوسطة والجوال */
+        @media (max-width: 900px) {
+            .top-bar { justify-content: center; text-align: center; }
+            .arena-board { padding: 28px 48px; }
+            .hex-wrapper { width: 84px; height: 96px; }
+            .hex-row { gap: 8px; margin-top: -21px; }
+            .hex-row.odd-row { transform: translateX(23px); }
+            .hex-row.even-row { transform: translateX(-23px); }
+            .hex-letter { font-size: 34px; }
+        }
+
+        @media (max-width: 550px) {
+            .arena-frame { padding: 16px; border-radius: 32px; }
+            .arena-board { padding: 20px 28px; border-radius: 20px; }
             .hex-wrapper { width: 58px; height: 66px; }
             .hex-row { gap: 5px; margin-top: -14px; }
-            .hex-row.even { transform: translateX(-31px); }
-            .hex-letter { font-size: 22px; }
-            .wall-right, .wall-left { display: none; }
+            .hex-row.odd-row { transform: translateX(15.75px); }
+            .hex-row.even-row { transform: translateX(-15.75px); }
+            .hex-letter { font-size: 23px; }
+            .tool-btn { padding: 8px 14px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر العُلوي -->
-    <div class="header-bar">
-        <div class="title-wrapper">
-            <span style="font-size: 32px;">🐝</span>
+    <!-- الشريط العلوي الشامل: الهوية + أدوات التلوين + أدوات العرض -->
+    <div class="top-bar">
+        <div class="brand">
+            <span class="brand-icon">🐝</span>
             <h1>لعبة الحروف مع عبد الله</h1>
         </div>
-        <div class="top-actions">
-            <button class="icon-btn" id="soundBtn" onclick="toggleSound()">🔊 الصوت: مفعل</button>
-            <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙 الوضع الليلي</button>
+
+        <div class="tools-group">
+            <button class="tool-btn btn-shuffle" onclick="shuffleLetters()">🔀 خلط</button>
+            <button class="tool-btn btn-red" id="tool-red" onclick="selectTool('red')">🟥 أحمر</button>
+            <button class="tool-btn btn-green" id="tool-green" onclick="selectTool('green')">🟩 أخضر</button>
+            <button class="tool-btn btn-clear" id="tool-clear" onclick="selectTool('clear')">🧹 مسح حرف</button>
+            <button class="tool-btn btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
+        </div>
+
+        <div class="system-group">
+            <button class="sys-btn timer-btn" id="timerBtn" onclick="toggleTimer()">⏱️ 15 ث</button>
+            <button class="sys-btn" id="fullscreenBtn" onclick="toggleFullScreen()" title="ملء الشاشة للبروجكتر">📺 عرض كامل</button>
+            <button class="sys-btn" id="soundBtn" onclick="toggleSound()">🔊</button>
+            <button class="sys-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
         </div>
     </div>
 
-    <!-- لوحة الأدوات -->
-    <div class="controls-dock">
-        <button class="tool-btn btn-shuffle" onclick="shuffleLetters()">🔀 خلط الحروف</button>
-        <button class="tool-btn btn-red" id="tool-red" onclick="selectTool('red')">🟥 تلوين أحمر</button>
-        <button class="tool-btn btn-green" id="tool-green" onclick="selectTool('green')">🟩 تلوين أخضر</button>
-        <button class="tool-btn btn-clear" id="tool-clear" onclick="selectTool('clear')">🧹 مسح حرف</button>
-        <button class="tool-btn btn-reset" onclick="resetAll()">🔄 مسح الكل</button>
-    </div>
-
-    <!-- ساحة خلية النحل التنافسية -->
-    <div class="arena-wrapper">
-        <span class="wall-badge wall-top">⬇ المسار الأخضر ⬇</span>
-        <span class="wall-badge wall-bottom">⬆ المسار الأخضر ⬆</span>
-        <span class="wall-badge wall-right">◀ المسار الأحمر ▶</span>
-        <span class="wall-badge wall-left">◀ المسار الأحمر ▶</span>
-
-        <div class="arena-inner">
-            <div class="honeycomb" id="gameBoard"></div>
+    <!-- ساحة خلية النحل العملاقة المتوازنة 100% في المنتصف -->
+    <div class="stage-container">
+        <div class="arena-frame">
+            <div class="arena-board">
+                <div class="honeycomb" id="gameBoard"></div>
+            </div>
         </div>
     </div>
-    
-    <!-- شريط الإشعارات -->
-    <div class="status-pill" id="gameStatus">
-        <span>✨ اختر أداة التلوين من الأعلى ثم اضغط على الحرف!</span>
+
+    <!-- شريط الحالة السفلي -->
+    <div class="status-bar" id="gameStatus">
+        ✨ جاهز للتحدي! اختر اللون ثم اضغط على الحرف مباشرة
     </div>
 
     <script>
         const letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن'];
         let boardState = [];
-        let currentTool = 'red'; // تفعيل اللون الأحمر افتراضياً لسرعة اللعب
+        let currentTool = 'red';
         let soundEnabled = true;
         let lastClickedIndex = null;
 
-        // محرك صوتيات تفاعلي مدمج بدون ملفات خارجية
+        // مؤقت المسابقة
+        let timerInterval = null;
+        let timeLeft = 15;
+
+        // محرك الصوتيات التفاعلي
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
-        function playTone(freq, type = 'sine', duration = 0.12) {
+        function playTone(freq, type = 'sine', duration = 0.14) {
             if (!soundEnabled) return;
             try {
                 if (!audioCtx) audioCtx = new AudioCtx();
@@ -469,7 +497,7 @@
                 const gain = audioCtx.createGain();
                 osc.type = type;
                 osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -485,20 +513,22 @@
         }
 
         function shuffleLetters() {
-            playTone(320, 'triangle', 0.15);
-            setTimeout(() => playTone(480, 'triangle', 0.18), 80);
+            playTone(300, 'triangle', 0.12);
+            setTimeout(() => playTone(450, 'triangle', 0.14), 70);
+            setTimeout(() => playTone(600, 'triangle', 0.16), 140);
+
             for (let i = boardState.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [boardState[i].letter, boardState[j].letter] = [boardState[j].letter, boardState[i].letter];
             }
             lastClickedIndex = null;
             renderBoard();
-            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف وإعادة توزيع خلية النحل!";
+            document.getElementById('gameStatus').innerText = "🔀 تم خلط الحروف وتوزيعها عشوائياً!";
         }
 
         function selectTool(tool) {
             currentTool = tool;
-            playTone(400, 'sine', 0.08);
+            playTone(420, 'sine', 0.08);
             
             document.getElementById('tool-red').classList.remove('active-tool');
             document.getElementById('tool-green').classList.remove('active-tool');
@@ -506,13 +536,13 @@
 
             if (tool === 'red') {
                 document.getElementById('tool-red').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🟥 أداة التلوين الأحمر جاهزة: اضغط على أي خلية لتلوينها";
+                document.getElementById('gameStatus').innerText = "🟥 أداة التلوين الأحمر نشطة — اضغط على أي حرف";
             } else if (tool === 'green') {
                 document.getElementById('tool-green').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🟩 أداة التلوين الأخضر جاهزة: اضغط على أي خلية لتلوينها";
+                document.getElementById('gameStatus').innerText = "🟩 أداة التلوين الأخضر نشطة — اضغط على أي حرف";
             } else if (tool === 'clear') {
                 document.getElementById('tool-clear').classList.add('active-tool');
-                document.getElementById('gameStatus').innerText = "🧹 أداة الممحاة جاهزة: اضغط على أي خلية لمسح لونها";
+                document.getElementById('gameStatus').innerText = "🧹 الممحاة نشطة — اضغط على أي حرف لمسح لونه";
             }
         }
 
@@ -520,11 +550,15 @@
             const boardEl = document.getElementById('gameBoard');
             boardEl.innerHTML = '';
 
-            // تقسيم الـ 25 حرف إلى 5 صفوف متداخلة (خلية نحل 5×5)
             for (let row = 0; row < 5; row++) {
                 const rowEl = document.createElement('div');
                 rowEl.classList.add('hex-row');
-                if (row % 2 === 1) rowEl.classList.add('even'); // إزاحة الصفوف الزوجية للتعشيق
+                // توازن متماثل: الصفوف الفردية يميناً قليلاً والزوجية يساراً قليلاً لتكون الخلية في قلب المركز 100%
+                if (row % 2 === 0) {
+                    rowEl.classList.add('odd-row');
+                } else {
+                    rowEl.classList.add('even-row');
+                }
 
                 for (let col = 0; col < 5; col++) {
                     const index = row * 5 + col;
@@ -553,26 +587,23 @@
         }
 
         function handleCellClick(index) {
-            if (!currentTool) {
-                alert("⚠️ الرجاء اختيار أداة أولاً من الأعلى!");
-                return;
-            }
-
             lastClickedIndex = index;
             const letter = boardState[index].letter;
 
             if (currentTool === 'red') {
                 boardState[index].team = 'red';
-                playTone(520, 'sine', 0.15);
-                document.getElementById('gameStatus').innerText = `🟥 تم احتلال حرف [ ${letter} ] لصالح الفريق الأحمر!`;
+                playTone(540, 'sine', 0.16);
+                setTimeout(() => playTone(720, 'sine', 0.18), 60);
+                document.getElementById('gameStatus').innerText = `🟥 الفريق الأحمر يسيطر على حرف [ ${letter} ]!`;
             } else if (currentTool === 'green') {
                 boardState[index].team = 'green';
-                playTone(640, 'sine', 0.15);
-                document.getElementById('gameStatus').innerText = `🟩 تم احتلال حرف [ ${letter} ] لصالح الفريق الأخضر!`;
+                playTone(580, 'sine', 0.16);
+                setTimeout(() => playTone(820, 'sine', 0.18), 60);
+                document.getElementById('gameStatus').innerText = `🟩 الفريق الأخضر يسيطر على حرف [ ${letter} ]!`;
             } else if (currentTool === 'clear') {
                 boardState[index].team = null;
-                playTone(240, 'sine', 0.12);
-                document.getElementById('gameStatus').innerText = `🧹 تم تفريغ خلية الحرف [ ${letter} ]`;
+                playTone(250, 'sine', 0.14);
+                document.getElementById('gameStatus').innerText = `🧹 تم إرجاع حرف [ ${letter} ] للوضع المحايد`;
             }
 
             renderBoard();
@@ -580,7 +611,7 @@
 
         function resetAll() {
             if (confirm("⚠️ هل أنت متأكد من مسح جميع الحروف الملونة وبدء جولة جديدة؟")) {
-                playTone(200, 'sawtooth', 0.2);
+                playTone(200, 'sawtooth', 0.22);
                 boardState.forEach(cell => cell.team = null);
                 lastClickedIndex = null;
                 renderBoard();
@@ -588,16 +619,60 @@
             }
         }
 
+        // مؤقت 15 ثانية للإثارة والحماس
+        function toggleTimer() {
+            const btn = document.getElementById('timerBtn');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timeLeft = 15;
+                btn.innerText = "⏱️ 15 ث";
+                btn.classList.remove('running');
+                document.getElementById('gameStatus').innerText = "⏹️ تم إيقاف المؤقت.";
+                return;
+            }
+
+            timeLeft = 15;
+            btn.classList.add('running');
+            btn.innerText = `⏱️ ${timeLeft} ث`;
+            playTone(600, 'sine', 0.1);
+            document.getElementById('gameStatus').innerText = "⏳ بدأ العد التنازلي للإجابة (15 ثانية)!";
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `⏱️ ${timeLeft} ث`;
+                    if (timeLeft <= 5) playTone(750, 'square', 0.08); // تنبيه الثواني الأخيرة
+                } else {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    btn.innerText = "⏱️ 15 ث";
+                    btn.classList.remove('running');
+                    playTone(180, 'sawtooth', 0.5); // صافرة انتهاء الوقت
+                    document.getElementById('gameStatus').innerText = "⏰ انتهى الوقت! الفرصة تنتقل للفريق الآخر!";
+                }
+            }, 1000);
+        }
+
+        // وضع ملء الشاشة للبروجكتر
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('themeBtn').innerText = isDark ? "☀️ الوضع النهاري" : "🌙 الوضع الليلي";
+            document.getElementById('themeBtn').innerText = isDark ? "☀️" : "🌙";
             playTone(440, 'sine', 0.1);
         }
 
         function toggleSound() {
             soundEnabled = !soundEnabled;
-            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 الصوت: مفعل" : "🔇 الصوت: مكتوم";
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊" : "🔇";
         }
 
         initBoard();
