@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🔔 جرس لعبة الحروف</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+*{box-sizing:border-box;font-family:'Cairo',sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:18px;text-align:center;color:#f1f5f9;background:radial-gradient(ellipse at 50% 0,#2a1d6e,#0b0830 70%)}
+[hidden]{display:none!important}
+.box{width:min(440px,100%);display:grid;gap:14px}
+h1{margin:0;font:700 32px 'Reem Kufi';color:#fde047}
+input{width:100%;padding:14px;border-radius:16px;border:2px solid #4c3fa8;background:#120d3a;color:#fff;font:800 20px Cairo;text-align:center;user-select:text}
+.tm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tm button{padding:18px 8px;border-radius:18px;border:3px solid transparent;font:900 20px Cairo;color:#fff;opacity:.55}
+.tm button.on{opacity:1;border-color:#fff;transform:scale(1.04)}
+.tm [data-t=red]{background:linear-gradient(135deg,#ef4444,#991b1b)}.tm [data-t=green]{background:linear-gradient(135deg,#10b981,#065f46)}
+.go{padding:16px;border:0;border-radius:18px;font:900 22px Cairo;color:#fff;background:linear-gradient(135deg,#a855f7,#6d28d9)}
+#bell{width:min(80vw,52dvh,360px);aspect-ratio:1;margin:8px auto;border-radius:50%;border:0;font:900 clamp(28px,8vw,42px)/1.3 Cairo;white-space:pre-line;color:#cbd5e1;background:radial-gradient(circle at 35% 30%,#64748b,#334155);box-shadow:0 14px 40px #000;touch-action:manipulation}
+#bell.open{color:#1c1400;background:radial-gradient(circle at 35% 30%,#fff7c2,#fbbf24 55%,#b45309);animation:pl .7s infinite alternate;box-shadow:0 0 60px #fbbf24}
+#bell.won{color:#fff;background:radial-gradient(circle at 35% 30%,#86efac,#16a34a 60%,#14532d);box-shadow:0 0 70px #22c55e}
+#bell.lost{color:#fff;background:radial-gradient(circle at 35% 30%,#fca5a5,#b91c1c 60%,#7f1d1d)}
+#bell.open:active{transform:scale(.94);animation:none}
+@keyframes pl{to{transform:scale(1.06)}}
+.me{font-weight:800;font-size:18px}.err{color:#fca5a5;font-weight:800}.lnk{background:none;border:0;color:#94a3b8;font:700 14px Cairo;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🔔 جرس لعبة الحروف</h1>
+  <div id="err" class="err" hidden>⚠️ إعدادات Firebase غير مضافة. افتح ملف firebase-config.js والصق الإعدادات.</div>
+  <div id="join" class="box">
+    <input id="rm" inputmode="numeric" placeholder="رمز الغرفة" maxlength="6">
+    <input id="nm" placeholder="اسمك" maxlength="16">
+    <div class="tm"><button data-t="red">🟥 الأحمر</button><button data-t="green">🟩 الأخضر</button></div>
+    <button class="go" id="go">دخول 🚀</button>
+    <div id="hint" class="err"></div>
+  </div>
+  <div id="play" hidden>
+    <div class="me" id="who"></div>
+    <button id="bell"></button>
+    <button class="lnk" id="chg">تغيير الاسم / الفريق</button>
+  </div>
+</div>
+<script>
+const $=i=>document.getElementById(i),C=window.FB_CONFIG;let me=null,room='',team=null,db;
+try{me=JSON.parse(localStorage.hrp||'null')}catch(e){}
+room=new URLSearchParams(location.search).get('room')||localStorage.hrr||'';
+function pick(t){team=t;document.querySelectorAll('.tm button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
+document.querySelectorAll('.tm button').forEach(b=>b.onclick=()=>pick(b.dataset.t));
+$('go').onclick=()=>{const n=$('nm').value.trim(),r=$('rm').value.trim();
+  if(!n||!team||!r){$('hint').textContent='اكتب الرمز والاسم واختر فريقك';return}
+  me={id:(me&&me.id)||Math.random().toString(36).slice(2,9),name:n,team};room=r;
+  localStorage.hrp=JSON.stringify(me);localStorage.hrr=r;start()};
+function render(st){const w=st.winner;let c='',t='⏳\nانتظر السؤال';
+  if(w){if(w.id==me.id){c='won';t='🎉\nأنت الأول!\nجاوب الآن';navigator.vibrate&&navigator.vibrate([200,80,200])}else{c='lost';t='🔔 '+w.name+'\nسبقك'}}
+  else if(st.open){c='open';t='🔔\nاضغط!'}
+  $('bell').className=c;$('bell').textContent=t}
+function start(){$('join').hidden=true;$('play').hidden=false;
+  $('who').textContent=(me.team=='red'?'🟥 ':'🟩 ')+me.name+' — غرفة '+room;
+  const R=db.ref('rooms/'+room),P=R.child('players/'+me.id);
+  db.ref('.info/connected').on('value',s=>{if(s.val()){P.onDisconnect().remove();P.set({name:me.name,team:me.team})}});
+  R.child('state').on('value',s=>render(s.val()||{}));
+  $('bell').onpointerdown=()=>{if(!$('bell').classList.contains('open'))return;navigator.vibrate&&navigator.vibrate(50);
+    R.child('state').transaction(c=>{if(c&&c.open&&!c.winner){c.winner={id:me.id,name:me.name,team:me.team,t:Date.now()};return c}})};
+  $('chg').onclick=()=>{P.remove();localStorage.removeItem('hrp');location.reload()}}
+if(typeof firebase=='undefined'||!C||String(C.apiKey).startsWith('PASTE')){$('err').hidden=false;$('join').hidden=true}
+else{firebase.initializeApp(C);db=firebase.database();$('rm').value=room;if(me){$('nm').value=me.name;pick(me.team)}if(me&&room)start()}
+</script>
+</body>
+</html>
