@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>لعبة الحروف مع عبد الله</title>
+<title>لعبة الحروف مع عبدالله</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800;900&family=Reem+Kufi:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{--w:min(150px,calc((100vw - 50px)/8.1),calc((100dvh - 240px)/6.7));--g:calc(var(--w)*.064);
@@ -142,10 +142,10 @@ html:not([lang=ar]) .top .btn{font-size:13px;padding:8px 10px}
   </section>
 </main>
 
-<div class="status"><div class="orb" id="orb">؟</div><span id="msg"></span><button class="btn b-spin" id="bz" onclick="toggleBuzz()" style="padding:6px 14px">🔔 جرس</button><button class="btn sys" onclick="showJoin()" title="انضمام المتسابقين">📱</button></div>
+<div class="status"><div class="orb" id="orb">؟</div><span id="msg"></span><button class="btn b-spin" id="bz" onclick="toggleBuzz()" style="padding:6px 14px">🔔 جرس</button><button class="btn sys" onclick="showJoin()" title="انضمام المتسابقين">📱</button><select class="btn sys" id="ans" title="وقت الإجابة بالثواني"><option value="5">⏱ 5 ث</option><option value="7">⏱ 7 ث</option><option value="10">⏱ 10 ث</option><option value="15">⏱ 15 ث</option></select></div>
 
 <footer class="foot"><span data-i="by"></span> <span style="font-weight:800;color:var(--tx)" data-i="name"></span> | <span data-i="mail"></span> <a href="mailto:abdollah.al.amoudi200@gmail.com" dir="ltr">abdollah.al.amoudi200@gmail.com</a></footer>
-<div id="bn"><div class="ring"><span id="bt">3</span></div><div><div id="bw"></div><div id="bs">🔔 دق الجرس أولاً!</div></div><div class="grp"><button class="btn b-green" onclick="judge(1)">✔ صح</button><button class="btn b-red" onclick="judge(0)">✖ غلط</button></div></div>
+<div id="bn"><div class="ring"><span id="bt">3</span></div><div><div id="bw"></div><div id="bs">🔔 دق الجرس أولاً!</div></div><div class="grp"><button class="btn b-green" onclick="judge(1)">✔ صح</button><button class="btn b-red" onclick="judge(0)">✖ غلط</button><button class="btn b-gray" onclick="ignoreBuzz()" title="تجاهل الضغطة بدون حساب">⟲</button></div></div>
 <div id="jn"><div class="ab"><div class="aq">📱 انضمام المتسابقين: امسح الرمز أو اكتب رقم الغرفة</div><div id="qr"></div><div id="rc"></div><div id="ru"></div><div class="grp" style="justify-content:center"><button class="btn b-gray" onclick="newRoom()">🔄 رمز جديد</button><button class="btn b-spin" onclick="$('jn').classList.remove('show')">إغلاق</button></div></div></div>
 <div id="rev"></div>
 <div id="win"><div class="wb" id="wb"><div class="tr">🏆</div><h2 id="wt"></h2><p data-i="winp"></p>
@@ -259,7 +259,7 @@ if(e.code=='Space'){e.preventDefault();spin()}else if(k=='r')setTool('red');else
 
 /* ===== الجرس (متسابقو الجوال) ===== */
 let R=null,bst={},shown=null,cdT=null;const room=localStorage.hrroom||(localStorage.hrroom=String(Math.random()*9000+1000|0));
-function bzInit(){if(typeof firebase=='undefined'||!window.FB_CONFIG||String(FB_CONFIG.apiKey).startsWith('PASTE')){$('bz').style.opacity=.55;return}
+function bzInit(){$('ans').value=localStorage.hrans||'7';$('ans').onchange=()=>localStorage.hrans=$('ans').value;if(typeof firebase=='undefined'||!window.FB_CONFIG||String(FB_CONFIG.apiKey).startsWith('PASTE')){$('bz').style.opacity=.55;return}
 try{firebase.initializeApp(FB_CONFIG);R=firebase.database().ref('rooms/'+room);
 R.child('state').on('value',s=>{bst=s.val()||{};bzRender()});R.child('players').on('value',s=>plRender(s.val()||{}))}catch(e){R=null}}
 const noCfg=()=>msg('⚠️ أضف إعدادات Firebase في ملف firebase-config.js');
@@ -268,13 +268,14 @@ function toggleBuzz(){if(!R)return noCfg();bst.open?R.child('state').set({open:f
 function bzRender(){$('bz').classList.toggle('on',!!bst.open);$('bz').textContent=bst.open?'🔔 مفتوح':'🔔 جرس';const w=bst.winner;
 if(w){if(shown!==w.t){shown=w.t;showWinner(w)}}else{shown=null;$('bn').classList.remove('show');clearInterval(cdT)}}
 function showWinner(w){const bn=$('bn');bn.style.setProperty('--c',w.team=='red'?'#ef4444':'#10b981');$('bw').textContent=(w.team=='red'?'🟥 ':'🟩 ')+w.name;
-bn.classList.add('show');tone(880,'sine',.5,.2);tone(1318,'sine',.7,.15,.08);$('bt').textContent=3;
+bn.classList.add('show');tone(880,'sine',.5,.2);tone(1318,'sine',.7,.15,.08);const N=+$('ans').value||7;$('bt').textContent=N;
 const t0=Date.now(),rg=bn.querySelector('.ring');clearInterval(cdT);rg.style.setProperty('--p','100%');
-cdT=setInterval(()=>{const l=Math.max(0,3-(Date.now()-t0)/1000);$('bt').textContent=l>0?Math.ceil(l):'⏰';rg.style.setProperty('--p',l/3*100+'%');if(l<=0){clearInterval(cdT);tone(200,'sawtooth',.4,.15)}},100)}
+cdT=setInterval(()=>{const l=Math.max(0,N-(Date.now()-t0)/1000);$('bt').textContent=l>0?Math.ceil(l):'⏰';rg.style.setProperty('--p',l/N*100+'%');if(l<=0){clearInterval(cdT);tone(200,'sawtooth',.4,.15)}},100)}
 function judge(ok){const w=bst.winner;if(!w)return;
-if(ok){R.child('state').set({open:false,winner:null});setTool(w.team);fanfare();
+if(ok){R.child('state').set({open:true,winner:null,round:Date.now()});setTool(w.team);fanfare();
 if(spot!==null&&!cells[spot].t)clickCell(spot);else msg((w.team=='red'?'🟥 ':'🟩 ')+w.name+' ✔ اضغط على الحرف لتلوينه')}
 else{const bl=Object.assign({},bst.blocked||{});bl[w.id]=1;R.child('state').set({open:true,winner:null,blocked:bl,round:Date.now()});tone(180,'sawtooth',.4)}}
+function ignoreBuzz(){if(R)R.child('state').set({open:true,winner:null,blocked:bst.blocked||null,round:Date.now()})}
 function plRender(p){['red','green'].forEach(t=>{const e=$('pl-'+t);e.innerHTML='';Object.values(p).filter(x=>x.team==t).forEach(x=>{const s=document.createElement('span');s.textContent=x.name;e.appendChild(s)})})}
 function showJoin(){const u=new URL('buzzer.html?room='+room,location.href).href;$('rc').textContent=room;$('ru').textContent=u;$('qr').innerHTML='';
 if(window.QRCode)new QRCode($('qr'),{text:u,width:220,height:220});$('jn').classList.add('show');if(!R)noCfg()}
